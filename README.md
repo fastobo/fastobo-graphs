@@ -1,6 +1,6 @@
-# `fastobo` [![Star me](https://img.shields.io/github/stars/fastobo/fastobo-graphs.svg?style=social&label=Star&maxAge=3600)](https://github.com/fastobo/fastobo-graphs/stargazers)
+# `fastobo-graphs` [![Star me](https://img.shields.io/github/stars/fastobo/fastobo-graphs.svg?style=social&label=Star&maxAge=3600)](https://github.com/fastobo/fastobo-graphs/stargazers)
 
-*OBO Graphs decoder and encoder in Rust.*
+*[OBO Graphs](https://github.com/geneontology/obographs/) decoder and encoder in Rust.*
 
 [![TravisCI](https://img.shields.io/travis/fastobo/fastobo-graphs/master.svg?maxAge=600&style=flat-square)](https://travis-ci.org/fastobo/fastobo-graphs/branches)
 [![Codecov](https://img.shields.io/codecov/c/gh/fastobo/fastobo-graphs/master.svg?style=flat-square&maxAge=600)](https://codecov.io/gh/fastobo/fastobo-graphs)
