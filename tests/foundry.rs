@@ -2,10 +2,8 @@ extern crate fastobo_graphs;
 extern crate serde_json;
 extern crate serde_yaml;
 
-use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
-use std::path::PathBuf;
 
 use fastobo_graphs::GraphDocument;
 
@@ -46,9 +44,8 @@ macro_rules! foundrytest {
             let peek = buf.fill_buf().expect("could not read response");
 
             if peek.starts_with(b"{") {
-                match serde_json::from_reader::<_, GraphDocument>(&mut buf) {
-                    Ok(doc) => println!("ok"),
-                    Err(e) => panic!("{}", e),
+                if let Err(e) = serde_json::from_reader::<_, GraphDocument>(&mut buf) {
+                    panic!("{}", e)
                 }
             } else {
                 panic!("could not connect to `{}`: {}", url, std::str::from_utf8(peek).unwrap());
