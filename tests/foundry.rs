@@ -64,4 +64,4 @@ foundrytest!(go_plus(go, "go/extensions/go-plus.json"));
 foundrytest!(pato(pato, "pato.json"));
 
 foundrytest!(mondo(mondo, "mondo.json"));
-foundrytest!(mondo_minimal(mondo, "mondo-minimal.json"));
+foundrytest!(#[expected_failure] mondo_minimal(mondo, "mondo-minimal.json"));
