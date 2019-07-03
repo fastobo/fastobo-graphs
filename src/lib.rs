@@ -1,21 +1,38 @@
 extern crate serde;
 
+use serde::Deserializer;
 use serde::Deserialize;
 use serde::Serialize;
 
+/// Deserialize a possibly missing vector into an empty one.
+fn optional_vector<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    match Option::deserialize(deserializer) {
+        Ok(Some(v)) => Ok(v),
+        Ok(None) => Ok(Vec::new()),
+        Err(e) => Err(e),
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct GraphDocument {
+    #[serde(default, deserialize_with = "optional_vector")]
     graphs: Vec<Graph>,
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Graph {
+    #[serde(default, deserialize_with = "optional_vector")]
     nodes: Vec<Node>,
+    #[serde(default, deserialize_with = "optional_vector")]
     edges: Vec<Edge>,
     id: String,
     #[serde(rename = "lbl")]
-    label: String,
+    label: Option<String>,
     meta: Box<Meta>,
     #[serde(rename = "equivalentNodesSets")]
     equivalent_nodes_sets: Vec<EquivalentNodesSet>,
@@ -30,31 +47,36 @@ pub struct Graph {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Node {
     id: String,
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
     #[serde(rename = "type")]
-    ty: NodeType,
-    label: String,
+    ty: Option<NodeType>, // FIXME: Use `CLASS` as default instead?
+    label: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Meta {
-    definition: DefinitionPropertyValue,
+    definition: Option<Box<DefinitionPropertyValue>>,
+    #[serde(default, deserialize_with = "optional_vector")]
     comments: Vec<String>,
+    #[serde(default, deserialize_with = "optional_vector")]
     subsets: Vec<String>,
+    #[serde(default, deserialize_with = "optional_vector")]
     xrefs: Vec<XrefPropertyValue>,
+    #[serde(default, deserialize_with = "optional_vector")]
     synonyms: Vec<SynonymPropertyValue>,
-    #[serde(rename = "basicPropertyValues")]
+    #[serde(rename = "basicPropertyValues", default, deserialize_with = "optional_vector")]
     basic_property_values: Vec<BasicPropertyValue>,
-    version: String,
+    version: Option<String>,
+    #[serde(default)]
     deprecated: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct DefinitionPropertyValue {
-    pred: String,
+    pred: Option<String>,
     val: String,
-    xrefs: String,
-    meta: Box<Meta>,
+    xrefs: Vec<String>,
+    meta: Option<Box<Meta>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -70,21 +92,21 @@ pub struct Edge {
     sub: String,
     pred: String,
     obj: String,
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct EquivalentNodesSet {
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
     #[serde(rename = "representativeNodeId")]
-    representative_node_id: String,
-    #[serde(rename = "nodeIds")]
+    representative_node_id: Option<String>,
+    #[serde(rename = "nodeIds", default, deserialize_with = "optional_vector")]
     node_ids: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LogicalDefinitionAxiom {
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
     #[serde(rename = "definedClassId")]
     defined_class_id: String,
     #[serde(rename = "genusIds")]
@@ -102,48 +124,51 @@ pub struct ExistentialRestrictionExpression {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct DomainRangeAxiom {
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
     #[serde(rename = "predicateId")]
     predicate_id: String,
-    #[serde(rename = "domainClassIds")]
+    #[serde(rename = "domainClassIds", default, deserialize_with = "optional_vector")]
     domain_class_ids: Vec<String>,
-    #[serde(rename = "rangeClassIds")]
+    #[serde(rename = "rangeClassIds", default, deserialize_with = "optional_vector")]
     range_class_ids: Vec<String>,
-    #[serde(rename = "allValuesFromEdges")]
+    #[serde(rename = "allValuesFromEdges", default, deserialize_with = "optional_vector")]
     all_values_from_edges: Vec<Edge>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PropertyChainAxiom {
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
     #[serde(rename = "predicateId")]
     predicate_id: String,
-    #[serde(rename = "chainPredicateIds")]
+    #[serde(rename = "chainPredicateIds", default, deserialize_with = "optional_vector")]
     chain_predicate_ids: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct XrefPropertyValue {
-    pred: String,
+    pred: Option<String>,
     val: String,
+    #[serde(default, deserialize_with = "optional_vector")]
     xrefs: Vec<String>,
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
     #[serde(rename = "lbl")]
-    label: String,
+    label: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SynonymPropertyValue {
     pred: String,
     val: String,
+    #[serde(default, deserialize_with = "optional_vector")]
     xrefs: Vec<String>,
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BasicPropertyValue {
     pred: String,
     val: String,
+    #[serde(default, deserialize_with = "optional_vector")]
     xrefs: Vec<String>,
-    meta: Box<Meta>,
+    meta: Option<Box<Meta>>,
 }
