@@ -17,6 +17,16 @@ where
     }
 }
 
+fn nullable_vector<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Vec::<Option<T>>::deserialize(deserializer).map(|v|
+        v.into_iter().flatten().collect()
+    )
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct GraphDocument {
     #[serde(default, deserialize_with = "optional_vector")]
@@ -111,6 +121,7 @@ pub struct LogicalDefinitionAxiom {
     defined_class_id: String,
     #[serde(rename = "genusIds")]
     genus_ids: Vec<String>,
+    #[serde(deserialize_with = "nullable_vector")]
     restrictions: Vec<ExistentialRestrictionExpression>,
 }
 
