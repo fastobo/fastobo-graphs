@@ -1,0 +1,3 @@
+[submodule "obographs"]
+	path = obographs
+	url = https://github.com/geneontology/obographs/
