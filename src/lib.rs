@@ -3,13 +3,13 @@ extern crate serde;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct GraphDocument {
     graphs: Vec<Graph>,
     meta: Box<Meta>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Graph {
     nodes: Vec<Node>,
     edges: Vec<Edge>,
@@ -27,7 +27,7 @@ pub struct Graph {
     property_chain_axioms: Vec<PropertyChainAxiom>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Node {
     id: String,
     meta: Box<Meta>,
@@ -36,7 +36,7 @@ pub struct Node {
     label: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Meta {
     definition: DefinitionPropertyValue,
     comments: Vec<String>,
@@ -49,7 +49,7 @@ pub struct Meta {
     deprecated: bool,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct DefinitionPropertyValue {
     pred: String,
     val: String,
@@ -57,7 +57,7 @@ pub struct DefinitionPropertyValue {
     meta: Box<Meta>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum NodeType {
     Class,
@@ -65,7 +65,7 @@ pub enum NodeType {
     Property,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Edge {
     sub: String,
     pred: String,
@@ -73,7 +73,7 @@ pub struct Edge {
     meta: Box<Meta>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct EquivalentNodesSet {
     meta: Box<Meta>,
     #[serde(rename = "representativeNodeId")]
@@ -82,7 +82,7 @@ pub struct EquivalentNodesSet {
     node_ids: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LogicalDefinitionAxiom {
     meta: Box<Meta>,
     #[serde(rename = "definedClassId")]
@@ -92,7 +92,7 @@ pub struct LogicalDefinitionAxiom {
     restrictions: Vec<ExistentialRestrictionExpression>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ExistentialRestrictionExpression {
     #[serde(rename = "propertyId")]
     property_id: String,
@@ -100,7 +100,7 @@ pub struct ExistentialRestrictionExpression {
     filler_id: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct DomainRangeAxiom {
     meta: Box<Meta>,
     #[serde(rename = "predicateId")]
@@ -113,7 +113,7 @@ pub struct DomainRangeAxiom {
     all_values_from_edges: Vec<Edge>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PropertyChainAxiom {
     meta: Box<Meta>,
     #[serde(rename = "predicateId")]
@@ -122,7 +122,7 @@ pub struct PropertyChainAxiom {
     chain_predicate_ids: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct XrefPropertyValue {
     pred: String,
     val: String,
@@ -132,7 +132,7 @@ pub struct XrefPropertyValue {
     label: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SynonymPropertyValue {
     pred: String,
     val: String,
@@ -140,7 +140,7 @@ pub struct SynonymPropertyValue {
     meta: Box<Meta>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BasicPropertyValue {
     pred: String,
     val: String,
