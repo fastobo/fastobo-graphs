@@ -1,5 +1,8 @@
 extern crate serde;
 
+#[cfg(feature = "obo")]
+mod obo;
+
 use serde::Deserializer;
 use serde::Deserialize;
 use serde::Serialize;
@@ -30,7 +33,7 @@ where
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct GraphDocument {
     #[serde(default, deserialize_with = "optional_vector")]
-    graphs: Vec<Graph>,
+    pub graphs: Vec<Graph>,
     meta: Option<Box<Meta>>,
 }
 
