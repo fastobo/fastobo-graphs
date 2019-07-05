@@ -1,3 +1,8 @@
+#![recursion_limit="128"]
+
+#[cfg(feature = "obo")]
+#[macro_use]
+extern crate mashup;
 extern crate serde;
 
 #[cfg(feature = "obo")]
