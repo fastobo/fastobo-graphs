@@ -3,6 +3,7 @@ use std::collections::HashMap;
 
 use fastobo::ast::ClassIdent;
 use fastobo::ast::HeaderFrame;
+use fastobo::ast::HeaderClause;
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
@@ -13,6 +14,7 @@ use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
 use fastobo::ast::InstanceClause;
 use fastobo::ast::TermFrame;
+use fastobo::ast::IsoDateTime;
 use fastobo::ast::InstanceFrame;
 use fastobo::ast::TypedefFrame;
 use fastobo::ast::Line;
@@ -51,20 +53,37 @@ impl From<Graph> for OboDoc {
             let id_sub = Ident::from_str(&edge.sub).expect("invalid ident");
             let id_pred = RelationIdent::from_str(&edge.pred).expect("invalid relation ident");
             let id_obj = Ident::from_str(&edge.obj).expect("invalid ident");
-            match entities.get_mut(&id_sub) {
-                Some(EntityFrame::Term(ref mut frame)) => {
-                    let c = TermClause::Relationship(id_pred, From::from(id_obj));
-                    frame.push(Line::from(c));
+            if &edge.pred == "is_a" || &edge.pred == "subPropertyOf" || &edge.pred == "subClassOf" {
+                match entities.get_mut(&id_sub) {
+                    Some(EntityFrame::Term(ref mut frame)) => {
+                        let c = TermClause::IsA(From::from(id_obj));
+                        frame.push(Line::from(c));
+                    }
+                    Some(EntityFrame::Typedef(ref mut frame)) => {
+                        let c = TypedefClause::IsA(From::from(id_obj));
+                        frame.push(Line::from(c));
+                    }
+                    Some(EntityFrame::Instance(_)) => {
+                        panic!("cannot have `is_a` on instance clause");
+                    },
+                    None => (),
                 }
-                Some(EntityFrame::Typedef(ref mut frame)) => {
-                    let c = TypedefClause::Relationship(id_pred, From::from(id_obj));
-                    frame.push(Line::from(c));
+            } else {
+                match entities.get_mut(&id_sub) {
+                    Some(EntityFrame::Term(ref mut frame)) => {
+                        let c = TermClause::Relationship(id_pred, From::from(id_obj));
+                        frame.push(Line::from(c));
+                    }
+                    Some(EntityFrame::Typedef(ref mut frame)) => {
+                        let c = TypedefClause::Relationship(id_pred, From::from(id_obj));
+                        frame.push(Line::from(c));
+                    }
+                    Some(EntityFrame::Instance(ref mut frame)) => {
+                        let c = InstanceClause::Relationship(id_pred, From::from(id_obj));
+                        frame.push(Line::from(c));
+                    }
+                    None => (),
                 }
-                Some(EntityFrame::Instance(ref mut frame)) => {
-                    let c = InstanceClause::Relationship(id_pred, From::from(id_obj));
-                    frame.push(Line::from(c));
-                }
-                None => (),
             }
         }
 
@@ -84,9 +103,26 @@ impl From<Graph> for OboDoc {
                             frame.push(Line::from(TypedefClause::EquivalentTo(id)));
                         }
                     }
-                    Some(EntityFrame::Instance(_)) => (),
+                    Some(EntityFrame::Instance(_)) => {
+                        panic!("cannot have `equivalent_to` on instance clause");
+                    },
                     None => (),
                 }
+            }
+        }
+
+        for dr in graph.domain_range_axioms.iter() {
+            let id = Ident::from_str(&dr.predicate_id).expect("invalid ident");
+            if let Some(EntityFrame::Typedef(ref mut frame)) = entities.get_mut(&id) {
+                for domain in dr.domain_class_ids.iter() {
+                    let domain_id = ClassIdent::from_str(&domain).expect("invalid ident");
+                    frame.push(Line::from(TypedefClause::Domain(domain_id)));
+                }
+                for range in dr.range_class_ids.iter() {
+                    let range_id = ClassIdent::from_str(&range).expect("invalid ident");
+                    frame.push(Line::from(TypedefClause::Range(range_id)));
+                }
+                // TODO: allValuesFromEdges
             }
         }
 
@@ -104,24 +140,56 @@ impl From<Graph> for OboDoc {
 impl From<Meta> for HeaderFrame {
     fn from(meta: Meta) -> Self {
         let mut frame = Self::new();
+
+
+        // FIXME
         frame
+    }
+}
+
+impl From<BasicPropertyValue> for HeaderClause {
+    fn from(pv: BasicPropertyValue) -> Self {
+        match pv.pred.as_str() {
+            "http://www.geneontology.org/formats/oboInOwl#hasOBOFormatVersion" => {
+                HeaderClause::FormatVersion(UnquotedString::new(pv.val))
+            }
+            other => {
+                let rel = RelationIdent::from_str(&other).expect("invalid relation ident");
+                let pv = match Ident::from_str(&pv.val) {
+                    Ok(id) => PropertyValue::Resource(rel, id),
+                    Err(_) => PropertyValue::Literal(
+                        rel,
+                        QuotedString::new(pv.val),
+                        Ident::from(PrefixedIdent::new("xsd", "string"))
+                    )
+                };
+                HeaderClause::PropertyValue(pv)
+            },
+        }
     }
 }
 
 // ---------------------------------------------------------------------------
 
 macro_rules! impl_frame_inner {
-    ($node:expr, $id: expr, $ident: ident, $variant: ident, $frame: ident, $clause: ident) => {{
-        let mut frame = $frame::new(Line::from($ident::from($id)));
-        if let Some(label) = $node.label {
-            let name = $clause::Name(UnquotedString::new(label));
-            frame.push(Line::from(name));
+    ($node:expr, $id: expr, $ident: ident, $variant: ident) => {{
+        mashup! {
+            m[Variant] = $variant;
+            m[Frame] = $variant Frame;
+            m[Clause] = $variant Clause;
         }
-        if let Some(meta) = $node.meta {
-            let clauses: Vec<$clause> = (*meta).into();
-            frame.extend(clauses.into_iter().map(Line::from));
+        m! {
+            let mut frame = Frame::new(Line::from($ident::from($id)));
+            if let Some(label) = $node.label {
+                let name = Clause::Name(UnquotedString::new(label));
+                frame.push(Line::from(name));
+            }
+            if let Some(meta) = $node.meta {
+                let clauses: Vec<Clause> = (*meta).into();
+                frame.extend(clauses.into_iter().map(Line::from));
+            }
+            Some(EntityFrame::Variant(frame))
         }
-        Some(EntityFrame::$variant(frame))
     }}
 }
 
@@ -131,13 +199,13 @@ impl From<Node> for Option<EntityFrame> {
         match node.ty {
             None => None,
             Some(NodeType::Class) => {
-                impl_frame_inner!(node, id, ClassIdent, Term, TermFrame, TermClause)
+                impl_frame_inner!(node, id, ClassIdent, Term)
             }
             Some(NodeType::Individual) => {
-                impl_frame_inner!(node, id, InstanceIdent, Instance, InstanceFrame, InstanceClause)
+                impl_frame_inner!(node, id, InstanceIdent, Instance)
             }
             Some(NodeType::Property) => {
-                impl_frame_inner!(node, id, RelationIdent, Typedef, TypedefFrame, TypedefClause)
+                impl_frame_inner!(node, id, RelationIdent, Typedef)
             }
         }
     }
@@ -213,6 +281,9 @@ macro_rules! impl_basic_pv_common {
             "http://purl.org/dc/elements/1.1/creator" => {
                 $clause::CreatedBy(UnquotedString::new($pv.val))
             },
+            "http://www.w3.org/2000/01/rdf-schema#comment" => {
+                $clause::Comment(UnquotedString::new($pv.val))
+            },
             "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId" => {
                 let id = Ident::from_str(&$pv.val).expect("invalid ident");
                 $clause::AltId(id.into())
@@ -221,6 +292,20 @@ macro_rules! impl_basic_pv_common {
                 let id = Ident::from_str(&$pv.val).expect("invalid ident");
                 $clause::Namespace(id.into())
             },
+            "http://purl.org/dc/elements/1.1/date" => {
+                let date = IsoDateTime::from_str(&$pv.val).expect("invalid date");
+                $clause::CreationDate(date)
+            },
+            "http://purl.org/dc/elements/1.1/creator" => {
+                $clause::CreatedBy(UnquotedString::new($pv.val))
+            },
+            "http://purl.obolibrary.org/obo/IAO_0100001" => {
+                if let Ok(id) = Ident::from_str(&$pv.val) {
+                    $clause::ReplacedBy(id.into())
+                } else {
+                    panic!("invalid ident (FIXME ?)")
+                }
+            }
             $( $l => $r ),*
             other => {
                 let rel = RelationIdent::from_str(&other).expect("invalid relation ident");
@@ -258,26 +343,6 @@ impl From<BasicPropertyValue> for InstanceClause {
         impl_basic_pv_common!(pv, InstanceClause, s)
     }
 }
-
-// macro_rules! impl_basic_pv {
-//     ($clause:ident) => {
-//         impl From<BasicPropertyValue> for $clause {
-//             fn from(pv: DefinitionPropertyValue) -> Self {
-//                 let value = QuotedString::new(pv.val);
-//                 let xrefs = pv.xrefs
-//                     .into_iter()
-//                     .map(|id: String| Ident::from_str(&id).map(Xref::new))
-//                     .collect::<Result<XrefList, _>>()
-//                     .expect("invalid xref id");
-//                 $clause::Relation(value, xrefs)
-//             }
-//         }
-//     }
-// }
-//
-// impl_basic_pv!(TermClause);
-// impl_basic_pv!(TypedefClause);
-// impl_basic_pv!(InstanceClause);
 
 // ---------------------------------------------------------------------------
 
