@@ -68,6 +68,20 @@ impl From<Graph> for OboDoc {
                     },
                     None => (),
                 }
+            } else if &edge.pred == "inverseOf" {
+                match entities.get_mut(&id_sub) {
+                    Some(EntityFrame::Typedef(ref mut frame)) => {
+                        let c = TypedefClause::InverseOf(From::from(id_obj));
+                        frame.push(Line::from(c));
+                    }
+                    Some(EntityFrame::Term(ref mut frame)) => {
+                        panic!("cannot have `inverse_of` on term clause");
+                    }
+                    Some(EntityFrame::Instance(_)) => {
+                        panic!("cannot have `inverse_of` on instance clause");
+                    },
+                    None => (),
+                }
             } else {
                 match entities.get_mut(&id_sub) {
                     Some(EntityFrame::Term(ref mut frame)) => {
