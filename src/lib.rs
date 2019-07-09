@@ -4,9 +4,13 @@
 #[macro_use]
 extern crate mashup;
 extern crate serde;
+#[cfg(feature = "obo")]
+extern crate fastobo;
 
 #[cfg(feature = "obo")]
 mod obo;
+#[cfg(feature = "obo")]
+mod constants;
 
 use serde::Deserializer;
 use serde::Deserialize;
@@ -71,7 +75,7 @@ pub struct Node {
     label: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq, Eq)]
 pub struct Meta {
     definition: Option<Box<DefinitionPropertyValue>>,
     #[serde(default, deserialize_with = "optional_vector")]
@@ -113,7 +117,7 @@ pub struct Edge {
     meta: Option<Box<Meta>>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq, Eq)]
 pub struct EquivalentNodesSet {
     meta: Option<Box<Meta>>,
     #[serde(rename = "representativeNodeId")]
@@ -122,7 +126,7 @@ pub struct EquivalentNodesSet {
     node_ids: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq, Eq)]
 pub struct LogicalDefinitionAxiom {
     meta: Option<Box<Meta>>,
     #[serde(rename = "definedClassId")]
@@ -133,7 +137,7 @@ pub struct LogicalDefinitionAxiom {
     restrictions: Vec<ExistentialRestrictionExpression>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug, PartialEq, Eq)]
 pub struct ExistentialRestrictionExpression {
     #[serde(rename = "propertyId")]
     property_id: String,
@@ -190,4 +194,15 @@ pub struct BasicPropertyValue {
     #[serde(default, deserialize_with = "optional_vector")]
     xrefs: Vec<String>,
     meta: Option<Box<Meta>>,
+}
+
+impl BasicPropertyValue {
+    pub fn new(predicate: String, value: String) -> Self {
+        Self {
+            pred: predicate,
+            val: value,
+            xrefs: Vec::new(),
+            meta: None,
+        }
+    }
 }
