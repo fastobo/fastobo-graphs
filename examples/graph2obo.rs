@@ -3,13 +3,13 @@ extern crate fastobo_graphs;
 extern crate serde_json;
 extern crate serde_yaml;
 
-use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
 use fastobo::visit::VisitMut;
 use fastobo_graphs::GraphDocument;
+use fastobo_graphs::FromGraph;
 
 fn main() {
     for path in std::env::args().skip(1) {
@@ -46,7 +46,7 @@ fn main() {
 
         // Write the generated document to an OBO file next to the input file.
         let graph = doc.graphs.into_iter().next().unwrap();
-        let mut obodoc = fastobo::ast::OboDoc::from(graph);
+        let mut obodoc = fastobo::ast::OboDoc::from_graph(graph);
         fastobo::visit::IdCompactor::new().visit_doc(&mut obodoc);
         File::create(&dstpath)
             .and_then(|mut f| write!(f, "{}", obodoc))
