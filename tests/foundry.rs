@@ -5,7 +5,7 @@ extern crate serde_yaml;
 use std::io::BufRead;
 use std::io::BufReader;
 
-use fastobo_graphs::GraphDocument;
+use fastobo_graphs::model::GraphDocument;
 
 lazy_static::lazy_static! {
     /// The latest OBO Foundry listing.

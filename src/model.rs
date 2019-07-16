@@ -49,6 +49,7 @@ pub struct Node {
     pub meta: Option<Box<Meta>>,
     #[serde(rename = "type")]
     pub ty: Option<NodeType>, // FIXME: Use `CLASS` as default instead?
+    #[serde(rename = "lbl")]
     pub label: Option<String>,
 }
 

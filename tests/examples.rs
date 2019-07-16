@@ -16,9 +16,9 @@ macro_rules! test_impl {
                 .join(stringify!($case));
             let yamlfile = File::open(basename.with_extension("yaml")).unwrap();
             let jsonfile = File::open(basename.with_extension("json")).unwrap();
-            let jsongraph: fastobo_graphs::GraphDocument = serde_json::from_reader(jsonfile)
+            let jsongraph: fastobo_graphs::model::GraphDocument = serde_json::from_reader(jsonfile)
                 .unwrap();
-            let yamlgraph: fastobo_graphs::GraphDocument = serde_yaml::from_reader(yamlfile).unwrap();
+            let yamlgraph: fastobo_graphs::model::GraphDocument = serde_yaml::from_reader(yamlfile).unwrap();
             assert_eq!(jsongraph, yamlgraph, "graphs do not match!")
         }
     }

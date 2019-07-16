@@ -8,8 +8,8 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use fastobo::visit::VisitMut;
-use fastobo_graphs::GraphDocument;
 use fastobo_graphs::FromGraph;
+use fastobo_graphs::model::GraphDocument;
 
 fn main() {
     for path in std::env::args().skip(1) {
@@ -23,7 +23,7 @@ fn main() {
         // file extension of the input).
         let doc = match srcpath.extension() {
             Some(s) if s == "json" => {
-                match serde_json::from_reader::<File, GraphDocument>(srcfile) {
+                match serde_yaml::from_reader::<File, GraphDocument>(srcfile) {
                     Ok(doc) => doc,
                     Err(e) => panic!("{} could not be parsed:\n{}", path, e),
                 }
