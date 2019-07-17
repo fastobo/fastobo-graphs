@@ -174,10 +174,9 @@ macro_rules! impl_basic_pv_common {
                 $clause::CreationDate(date)
             },
             iao::REPLACED_BY => {
-                if let Ok(id) = Ident::from_str(&$pv.val) {
-                    $clause::ReplacedBy(id.into())
-                } else {
-                    panic!("invalid ident (FIXME ?)")
+                match Ident::from_str(&$pv.val) {
+                    Ok(id) => $clause::ReplacedBy(id.into()),
+                    Err(e) => panic!("invalid ident {:?} (FIXME ?)", e),
                 }
             }
             $( $l => $r ),*
@@ -207,7 +206,20 @@ impl FromGraph<BasicPropertyValue> for TermClause {
 impl FromGraph<BasicPropertyValue>  for TypedefClause {
     fn from_graph(pv: BasicPropertyValue) -> Self {
         let s = pv.pred.as_str();
-        impl_basic_pv_common!(pv, TypedefClause, s)
+        impl_basic_pv_common!(pv, TypedefClause, s,
+            obo_in_owl::IS_CYCLIC => {
+                match bool::from_str(&pv.val) {
+                    Ok(b) => TypedefClause::IsCyclic(b),
+                    Err(e) => panic!("invalid boolean {:?}", e),
+                }
+            },
+            iao::ANTISYMMETRIC_PROPERTY => {
+                match bool::from_str(&pv.val) {
+                    Ok(b) => TypedefClause::IsAntiSymmetric(b),
+                    Err(e) => panic!("invalid boolean {:?}", e),
+                }
+            }
+        )
     }
 }
 

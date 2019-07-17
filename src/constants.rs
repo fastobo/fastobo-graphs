@@ -69,6 +69,10 @@ pub mod property {
         pub const HAS_NARROW_SYNONYM: &str = concat!(oboInOwl!(), "hasNarrowSynonym");
         pub const HAS_RELATED_SYNONYM: &str = concat!(oboInOwl!(), "hasRelatedSynonym");
         pub const HAS_SYNONYM_TYPE: &str = concat!(oboInOwl!(), "hasSynonymType");
+
+        pub const IS_CYCLIC: &str = concat!(oboInOwl!(), "is_cyclic");
+        pub const IS_ANTI_SYMMETRIC: &str = concat!(oboInOwl!(), "is_anti_symmetric");
+        pub const DISJOINT_OVER: &str = concat!(oboInOwl!(), "disjoint_over");
     }
 
     /// OWL2 annotation properties.
@@ -93,5 +97,6 @@ pub mod property {
     pub mod iao {
         pub const REPLACED_BY: &str = concat!(obo!(), "IAO_0100001");
         pub const DEFINITION: &str = concat!(obo!(), "IAO_0000115");
+        pub const ANTISYMMETRIC_PROPERTY: &str = concat!(obo!(), "IAO_0000427");
     }
 }
