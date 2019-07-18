@@ -45,6 +45,8 @@ use crate::model::DefinitionPropertyValue;
 use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
 
+use crate::error::Result;
+use crate::error::Error;
 use super::FromGraph;
 
 // ---------------------------------------------------------------------------
@@ -63,19 +65,19 @@ macro_rules! impl_frame_inner {
                 frame.push(Line::from(name));
             }
             if let Some(meta) = $node.meta {
-                let clauses: Vec<Clause> = FromGraph::from_graph(*meta);
+                let clauses: Vec<Clause> = FromGraph::from_graph(*meta)?;
                 frame.extend(clauses.into_iter().map(Line::from));
             }
-            Some(EntityFrame::Variant(frame))
+            Ok(Some(EntityFrame::Variant(frame)))
         }
     }}
 }
 
 impl FromGraph<Node> for Option<EntityFrame> {
-    fn from_graph(node: Node) -> Self {
+    fn from_graph(node: Node) -> Result<Self> {
         let id = Ident::from_str(&node.id).expect("invalid node id");
         match node.ty {
-            None => None,
+            None => Ok(None),
             Some(NodeType::Class) => {
                 impl_frame_inner!(node, id, ClassIdent, Term)
             }
@@ -94,10 +96,10 @@ impl FromGraph<Node> for Option<EntityFrame> {
 macro_rules! impl_meta {
     ($clause:ident) => {
         impl FromGraph<Meta> for Vec<$clause> {
-            fn from_graph(meta: Meta) -> Self {
+            fn from_graph(meta: Meta) -> Result<Self> {
                 let mut clauses = Vec::new();
                 if let Some(desc) = meta.definition {
-                    clauses.push($clause::from_graph(*desc))
+                    clauses.push($clause::from_graph(*desc)?)
                 }
                 for comment in meta.comments {
                     clauses.push($clause::Comment(UnquotedString::from(comment)));
@@ -107,18 +109,18 @@ macro_rules! impl_meta {
                     clauses.push($clause::Subset(id));
                 }
                 for xref in meta.xrefs {
-                    clauses.push($clause::Xref(Xref::from_graph(xref)));
+                    clauses.push($clause::Xref(Xref::from_graph(xref)?));
                 }
                 for synonym in meta.synonyms {
-                    clauses.push($clause::Synonym(Synonym::from_graph(synonym)));
+                    clauses.push($clause::Synonym(Synonym::from_graph(synonym)?));
                 }
                 for pv in meta.basic_property_values {
-                    clauses.push($clause::from_graph(pv));
+                    clauses.push($clause::from_graph(pv)?);
                 }
                 if meta.deprecated {
                     clauses.push($clause::IsObsolete(true));
                 }
-                clauses
+                Ok(clauses)
             }
         }
     }
@@ -133,14 +135,13 @@ impl_meta!(InstanceClause);
 macro_rules! impl_definition_pv {
     ($clause:ident) => {
         impl FromGraph<DefinitionPropertyValue> for $clause {
-            fn from_graph(pv: DefinitionPropertyValue) -> Self {
+            fn from_graph(pv: DefinitionPropertyValue) -> Result<Self> {
                 let value = QuotedString::new(pv.val);
                 let xrefs = pv.xrefs
                     .into_iter()
-                    .map(|id: String| Ident::from_str(&id).map(Xref::new))
-                    .collect::<Result<XrefList, _>>()
-                    .expect("invalid xref id");
-                $clause::Def(value, xrefs)
+                    .map(|id: String| Ident::from_str(&id).map(Xref::new).map_err(Error::from))
+                    .collect::<Result<XrefList>>()?;
+                Ok($clause::Def(value, xrefs))
             }
         }
     }
@@ -156,32 +157,30 @@ macro_rules! impl_basic_pv_common {
     ($pv:ident, $clause:ident, $x:ident $(, $l:pat => $r:expr )* ) => {{
         match $x {
             dc::CREATOR => {
-                $clause::CreatedBy(UnquotedString::new($pv.val))
+                Ok($clause::CreatedBy(UnquotedString::new($pv.val)))
             },
             rdfs::COMMENT => {
-                $clause::Comment(UnquotedString::new($pv.val))
+                Ok($clause::Comment(UnquotedString::new($pv.val)))
             },
             obo_in_owl::HAS_ALTERNATIVE_ID => {
-                let id = Ident::from_str(&$pv.val).expect("invalid ident");
-                $clause::AltId(id.into())
+                let id = Ident::from_str(&$pv.val)?;
+                Ok($clause::AltId(id.into()))
             },
             obo_in_owl::HAS_OBO_NAMESPACE => {
-                let id = Ident::from_str(&$pv.val).expect("invalid ident");
-                $clause::Namespace(id.into())
+                let id = Ident::from_str(&$pv.val)?;
+                Ok($clause::Namespace(id.into()))
             },
             dc::DATE => {
-                let date = IsoDateTime::from_str(&$pv.val).expect("invalid date");
-                $clause::CreationDate(date)
+                let date = IsoDateTime::from_str(&$pv.val)?;
+                Ok($clause::CreationDate(date))
             },
             iao::REPLACED_BY => {
-                match Ident::from_str(&$pv.val) {
-                    Ok(id) => $clause::ReplacedBy(id.into()),
-                    Err(e) => panic!("invalid ident {:?} (FIXME ?)", e),
-                }
+                let id = Ident::from_str(&$pv.val)?;
+                Ok($clause::ReplacedBy(id.into()))
             }
             $( $l => $r ),*
             other => {
-                let rel = RelationIdent::from_str(&other).expect("invalid relation ident");
+                let rel = RelationIdent::from_str(&other)?;
                 let pv = match Ident::from_str(&$pv.val) {
                     Ok(id) => PropertyValue::Resource(rel, id),
                     Err(_) => PropertyValue::Literal(
@@ -190,32 +189,32 @@ macro_rules! impl_basic_pv_common {
                         Ident::from(PrefixedIdent::new("xsd", "string"))
                     )
                 };
-                $clause::PropertyValue(pv)
+                Ok($clause::PropertyValue(pv))
             },
         }
     }};
 }
 
 impl FromGraph<BasicPropertyValue> for TermClause {
-    fn from_graph(pv: BasicPropertyValue) -> Self {
+    fn from_graph(pv: BasicPropertyValue) -> Result<Self> {
         let s = pv.pred.as_str();
         impl_basic_pv_common!(pv, TermClause, s)
     }
 }
 
 impl FromGraph<BasicPropertyValue>  for TypedefClause {
-    fn from_graph(pv: BasicPropertyValue) -> Self {
+    fn from_graph(pv: BasicPropertyValue) -> Result<Self> {
         let s = pv.pred.as_str();
         impl_basic_pv_common!(pv, TypedefClause, s,
             obo_in_owl::IS_CYCLIC => {
                 match bool::from_str(&pv.val) {
-                    Ok(b) => TypedefClause::IsCyclic(b),
+                    Ok(b) => Ok(TypedefClause::IsCyclic(b)),
                     Err(e) => panic!("invalid boolean {:?}", e),
                 }
             },
             iao::ANTISYMMETRIC_PROPERTY => {
                 match bool::from_str(&pv.val) {
-                    Ok(b) => TypedefClause::IsAntiSymmetric(b),
+                    Ok(b) => Ok(TypedefClause::IsAntiSymmetric(b)),
                     Err(e) => panic!("invalid boolean {:?}", e),
                 }
             }
@@ -224,7 +223,7 @@ impl FromGraph<BasicPropertyValue>  for TypedefClause {
 }
 
 impl FromGraph<BasicPropertyValue>  for InstanceClause {
-    fn from_graph(pv: BasicPropertyValue) -> Self {
+    fn from_graph(pv: BasicPropertyValue) -> Result<Self> {
         let s = pv.pred.as_str();
         impl_basic_pv_common!(pv, InstanceClause, s)
     }

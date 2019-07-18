@@ -4,6 +4,8 @@ mod header;
 mod syn;
 mod xref;
 
-pub trait FromGraph<T> {
-    fn from_graph(source: T) -> Self;
+use crate::error::Result;
+
+pub trait FromGraph<T>: Sized {
+    fn from_graph(source: T) -> Result<Self>;
 }

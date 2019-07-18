@@ -8,10 +8,12 @@ use fastobo::ast::XrefList;
 use fastobo::ast::QuotedString;
 
 use crate::model::SynonymPropertyValue;
+use crate::error::Error;
+use crate::error::Result;
 use super::FromGraph;
 
 impl FromGraph<SynonymPropertyValue> for Synonym {
-    fn from_graph(pv: SynonymPropertyValue) -> Self {
+    fn from_graph(pv: SynonymPropertyValue) -> Result<Self> {
         let desc = QuotedString::new(pv.val);
         let scope = match pv.pred.as_str() {
             "hasBroadSynonym" => SynonymScope::Broad,
@@ -24,6 +26,6 @@ impl FromGraph<SynonymPropertyValue> for Synonym {
             .into_iter()
             .map(|id| Xref::new(Ident::from_str(&id).expect("invalid xref ident")))
             .collect::<XrefList>();
-        Synonym::with_xrefs(desc, scope, xrefs)
+        Ok(Synonym::with_xrefs(desc, scope, xrefs))
     }
 }

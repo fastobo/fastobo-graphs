@@ -21,3 +21,9 @@ impl From<std::io::Error> for Error {
         Error::IOError(err)
     }
 }
+
+impl From<fastobo::error::SyntaxError> for Error {
+    fn from(err: fastobo::error::SyntaxError) -> Self {
+        Error::OboSyntaxError(err)
+    }
+}

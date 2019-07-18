@@ -46,20 +46,22 @@ use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
 
 use super::FromGraph;
+use crate::error::Error;
+use crate::error::Result;
 
 impl FromGraph<Meta> for HeaderFrame {
-    fn from_graph(meta: Meta) -> Self {
+    fn from_graph(meta: Meta) -> Result<Self> {
         let mut frame = Self::new();
         // ... TODO ... //
-        frame
+        Ok(frame)
     }
 }
 
 impl FromGraph<BasicPropertyValue> for HeaderClause {
-    fn from_graph(pv: BasicPropertyValue) -> Self {
+    fn from_graph(pv: BasicPropertyValue) -> Result<Self> {
         match pv.pred.as_str() {
             obo_in_owl::HAS_OBO_FORMAT_VERSION => {
-                HeaderClause::FormatVersion(UnquotedString::new(pv.val))
+                Ok(HeaderClause::FormatVersion(UnquotedString::new(pv.val)))
             }
             // ...TODO... //
             other => {
@@ -72,7 +74,7 @@ impl FromGraph<BasicPropertyValue> for HeaderClause {
                         Ident::from(PrefixedIdent::new("xsd", "string"))
                     )
                 };
-                HeaderClause::PropertyValue(pv)
+                Ok(HeaderClause::PropertyValue(pv))
             },
         }
     }

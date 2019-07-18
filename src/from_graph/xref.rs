@@ -4,12 +4,16 @@ use fastobo::ast::Xref;
 use fastobo::ast::Ident;
 
 use crate::model::XrefPropertyValue;
+use crate::error::Error;
+use crate::error::Result;
 use super::FromGraph;
 
 impl FromGraph<XrefPropertyValue> for Xref {
-    fn from_graph(pv: XrefPropertyValue) -> Self {
+    fn from_graph(pv: XrefPropertyValue) -> Result<Self> {
         // FIXME: what to do with label ? what to do with meta ?
-        let id = Ident::from_str(&pv.val).expect("invalid xref ident");
-        Xref::new(id)
+        match Ident::from_str(&pv.val) {
+            Ok(id) => Ok(Xref::new(id)),
+            Err(e) => Err(Error::OboSyntaxError(e)),
+        }
     }
 }

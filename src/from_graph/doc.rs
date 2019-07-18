@@ -46,13 +46,17 @@ use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
 
 use super::FromGraph;
+use crate::error::Error;
+use crate::error::Result;
 
 impl FromGraph<Graph> for OboDoc {
-    fn from_graph(graph: Graph) -> Self {
+    fn from_graph(graph: Graph) -> Result<Self> {
 
         let mut entities = HashMap::new();
-        for frame in graph.nodes.into_iter().filter_map(<Option<EntityFrame>>::from_graph) {
-            entities.insert(frame.as_id().clone(), frame);
+        for node in graph.nodes.into_iter() {
+            if let Some(frame) = <Option<EntityFrame>>::from_graph(node)? {
+                entities.insert(frame.as_id().clone(), frame);
+            }
         }
 
         for edge in graph.edges.iter() {
@@ -146,11 +150,11 @@ impl FromGraph<Graph> for OboDoc {
             }
         }
 
-        let mut header = FromGraph::from_graph(*graph.meta);
+        let mut header = FromGraph::from_graph(*graph.meta)?;
         let mut entities = entities.into_iter().map(|(_, v)| v).collect();
 
         let mut doc = OboDoc::with_header(header).and_entities(entities);
         doc.sort();
-        doc
+        Ok(doc)
     }
 }
