@@ -46,7 +46,8 @@ fn main() {
 
         // Write the generated document to an OBO file next to the input file.
         let graph = doc.graphs.into_iter().next().unwrap();
-        let mut obodoc = fastobo::ast::OboDoc::from_graph(graph);
+        let mut obodoc = fastobo::ast::OboDoc::from_graph(graph)
+            .expect("could not convert from graph");
         fastobo::visit::IdCompactor::new().visit_doc(&mut obodoc);
         File::create(&dstpath)
             .and_then(|mut f| write!(f, "{}", obodoc))
