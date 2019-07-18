@@ -20,12 +20,12 @@ impl FromGraph<SynonymPropertyValue> for Synonym {
             "hasExactSynonym" => SynonymScope::Exact,
             "hasNarrowSynonym" => SynonymScope::Narrow,
             "hasRelatedSynonym" => SynonymScope::Related,
-            other => panic!("unknown synonym type: {}", other),
+            other => return Err(Error::InvalidSynonymType(other.to_string())),
         };
         let xrefs = pv.xrefs
             .into_iter()
-            .map(|id| Xref::new(Ident::from_str(&id).expect("invalid xref ident")))
-            .collect::<XrefList>();
+            .map(|id| Ident::from_str(&id).map(Xref::new).map_err(Error::from))
+            .collect::<Result<XrefList>>()?;
         Ok(Synonym::with_xrefs(desc, scope, xrefs))
     }
 }

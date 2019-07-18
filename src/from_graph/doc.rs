@@ -60,9 +60,9 @@ impl FromGraph<Graph> for OboDoc {
         }
 
         for edge in graph.edges.iter() {
-            let id_sub = Ident::from_str(&edge.sub).expect("invalid ident");
-            let id_pred = RelationIdent::from_str(&edge.pred).expect("invalid relation ident");
-            let id_obj = Ident::from_str(&edge.obj).expect("invalid ident");
+            let id_sub = Ident::from_str(&edge.sub)?;
+            let id_pred = RelationIdent::from_str(&edge.pred)?;
+            let id_obj = Ident::from_str(&edge.obj)?;
             if &edge.pred == "is_a" || &edge.pred == "subPropertyOf" || &edge.pred == "subClassOf" {
                 match entities.get_mut(&id_sub) {
                     Some(EntityFrame::Term(ref mut frame)) => {
@@ -113,17 +113,17 @@ impl FromGraph<Graph> for OboDoc {
 
         for eq in graph.equivalent_nodes_sets.iter() {
             for node in eq.node_ids.iter() {
-                let node_id = Ident::from_str(&node).expect("invalid ident");
+                let node_id = Ident::from_str(&node)?;
                 match entities.get_mut(&node_id) {
                     Some(EntityFrame::Term(ref mut frame)) => {
                         for node in eq.node_ids.iter().filter(|&n| n != node) {
-                            let id = ClassIdent::from_str(&node).expect("invalid ident");
+                            let id = ClassIdent::from_str(&node)?;
                             frame.push(Line::from(TermClause::EquivalentTo(id)));
                         }
                     }
                     Some(EntityFrame::Typedef(ref mut frame)) => {
                         for node in eq.node_ids.iter().filter(|&n| n != node) {
-                            let id = RelationIdent::from_str(&node).expect("invalid ident");
+                            let id = RelationIdent::from_str(&node)?;
                             frame.push(Line::from(TypedefClause::EquivalentTo(id)));
                         }
                     }
@@ -136,14 +136,14 @@ impl FromGraph<Graph> for OboDoc {
         }
 
         for dr in graph.domain_range_axioms.iter() {
-            let id = Ident::from_str(&dr.predicate_id).expect("invalid ident");
+            let id = Ident::from_str(&dr.predicate_id)?;
             if let Some(EntityFrame::Typedef(ref mut frame)) = entities.get_mut(&id) {
                 for domain in dr.domain_class_ids.iter() {
-                    let domain_id = ClassIdent::from_str(&domain).expect("invalid ident");
+                    let domain_id = ClassIdent::from_str(&domain)?;
                     frame.push(Line::from(TypedefClause::Domain(domain_id)));
                 }
                 for range in dr.range_class_ids.iter() {
-                    let range_id = ClassIdent::from_str(&range).expect("invalid ident");
+                    let range_id = ClassIdent::from_str(&range)?;
                     frame.push(Line::from(TypedefClause::Range(range_id)));
                 }
                 // TODO: allValuesFromEdges

@@ -209,13 +209,13 @@ impl FromGraph<BasicPropertyValue>  for TypedefClause {
             obo_in_owl::IS_CYCLIC => {
                 match bool::from_str(&pv.val) {
                     Ok(b) => Ok(TypedefClause::IsCyclic(b)),
-                    Err(e) => panic!("invalid boolean {:?}", e),
+                    Err(e) => Err(Error::InvalidBoolean(e, pv.val.to_string())),
                 }
             },
             iao::ANTISYMMETRIC_PROPERTY => {
                 match bool::from_str(&pv.val) {
                     Ok(b) => Ok(TypedefClause::IsAntiSymmetric(b)),
-                    Err(e) => panic!("invalid boolean {:?}", e),
+                    Err(e) => Err(Error::InvalidBoolean(e, pv.val.to_string())),
                 }
             }
         )

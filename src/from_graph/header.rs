@@ -65,7 +65,7 @@ impl FromGraph<BasicPropertyValue> for HeaderClause {
             }
             // ...TODO... //
             other => {
-                let rel = RelationIdent::from_str(&other).expect("invalid relation ident");
+                let rel = RelationIdent::from_str(&other)?;
                 let pv = match Ident::from_str(&pv.val) {
                     Ok(id) => PropertyValue::Resource(rel, id),
                     Err(_) => PropertyValue::Literal(

@@ -11,9 +11,6 @@ use super::FromGraph;
 impl FromGraph<XrefPropertyValue> for Xref {
     fn from_graph(pv: XrefPropertyValue) -> Result<Self> {
         // FIXME: what to do with label ? what to do with meta ?
-        match Ident::from_str(&pv.val) {
-            Ok(id) => Ok(Xref::new(id)),
-            Err(e) => Err(Error::OboSyntaxError(e)),
-        }
+        Ident::from_str(&pv.val).map(Xref::new).map_err(Error::from)
     }
 }

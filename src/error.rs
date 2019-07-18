@@ -6,6 +6,10 @@ pub enum Error {
     IOError(#[error(cause)] std::io::Error),
     #[error(display = "{}", 0)]
     OboSyntaxError(#[error(cause)] fastobo::error::SyntaxError),
+    #[error(display = "{}: {:?}", 0, 1)]
+    InvalidBoolean(#[error(cause)] std::str::ParseBoolError, String),
+    #[error(display = "invalid synonym type: {:?}", 0)]
+    InvalidSynonymType(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
