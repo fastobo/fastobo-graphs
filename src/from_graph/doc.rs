@@ -74,7 +74,7 @@ impl FromGraph<Graph> for OboDoc {
                         frame.push(Line::from(c));
                     }
                     Some(EntityFrame::Instance(_)) => {
-                        panic!("cannot have `is_a` on instance clause");
+                        return Err(Error::invalid_instance_clause("is_a"));
                     },
                     None => (),
                 }
@@ -85,10 +85,10 @@ impl FromGraph<Graph> for OboDoc {
                         frame.push(Line::from(c));
                     }
                     Some(EntityFrame::Term(ref mut frame)) => {
-                        panic!("cannot have `inverse_of` on term clause");
+                        return Err(Error::invalid_term_clause("inverse_of"));
                     }
                     Some(EntityFrame::Instance(_)) => {
-                        panic!("cannot have `inverse_of` on instance clause");
+                        return Err(Error::invalid_instance_clause("inverse_of"));
                     },
                     None => (),
                 }
@@ -128,7 +128,7 @@ impl FromGraph<Graph> for OboDoc {
                         }
                     }
                     Some(EntityFrame::Instance(_)) => {
-                        panic!("cannot have `equivalent_to` on instance clause");
+                        return Err(Error::invalid_instance_clause("equivalent_to"));
                     },
                     None => (),
                 }

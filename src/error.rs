@@ -10,9 +10,25 @@ pub enum Error {
     InvalidBoolean(#[error(cause)] std::str::ParseBoolError, String),
     #[error(display = "invalid synonym type: {:?}", 0)]
     InvalidSynonymType(String),
+    #[error(display = "invalid term clause: {:?}", 0)]
+    InvalidTermClause(String),
+    #[error(display = "invalid instance clause: {:?}", 0)]
+    InvalidInstanceClause(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+impl Error {
+    /// Create a new `Error::InvalidInstanceClause` error variant.
+    pub fn invalid_instance_clause<S: Into<String>>(clause: S) -> Self {
+        Error::InvalidInstanceClause(clause.into())
+    }
+
+    /// Create a new `Error::InvalidTermClause` error variant.
+    pub fn invalid_term_clause<S: Into<String>>(clause: S) -> Self {
+        Error::InvalidTermClause(clause.into())
+    }
+}
 
 impl From<serde_yaml::Error> for Error {
     fn from(err: serde_yaml::Error) -> Self {

@@ -75,7 +75,7 @@ macro_rules! impl_frame_inner {
 
 impl FromGraph<Node> for Option<EntityFrame> {
     fn from_graph(node: Node) -> Result<Self> {
-        let id = Ident::from_str(&node.id).expect("invalid node id");
+        let id = Ident::from_str(&node.id)?;
         match node.ty {
             None => Ok(None),
             Some(NodeType::Class) => {
@@ -105,7 +105,7 @@ macro_rules! impl_meta {
                     clauses.push($clause::Comment(UnquotedString::from(comment)));
                 }
                 for subset in meta.subsets {
-                    let id = SubsetIdent::from_str(&subset).expect("invalid subset ident");
+                    let id = SubsetIdent::from_str(&subset)?;
                     clauses.push($clause::Subset(id));
                 }
                 for xref in meta.xrefs {
