@@ -72,6 +72,8 @@ pub mod property {
         pub const HAS_RELATED_SYNONYM: &str = concat!(oboInOwl!(), "hasRelatedSynonym");
         pub const HAS_SYNONYM_TYPE: &str = concat!(oboInOwl!(), "hasSynonymType");
 
+        pub const IS_CLASS_LEVEL: &str = concat!(oboInOwl!(), "is_class_level");
+        pub const IS_METADATA_TAG: &str = concat!(oboInOwl!(), "is_metadata_tag");
         pub const IS_CYCLIC: &str = concat!(oboInOwl!(), "is_cyclic");
         pub const IS_ANTI_SYMMETRIC: &str = concat!(oboInOwl!(), "is_anti_symmetric");
         pub const DISJOINT_OVER: &str = concat!(oboInOwl!(), "disjoint_over");

@@ -219,6 +219,18 @@ impl FromGraph<BasicPropertyValue>  for TypedefClause {
                     Ok(b) => Ok(TypedefClause::IsAntiSymmetric(b)),
                     Err(e) => Err(Error::InvalidBoolean(e, pv.val.to_string())),
                 }
+            },
+            obo_in_owl::IS_CLASS_LEVEL => {
+                match bool::from_str(&pv.val) {
+                    Ok(b) => Ok(TypedefClause::IsClassLevel(b)),
+                    Err(e) => Err(Error::InvalidBoolean(e, pv.val.to_string())),
+                }
+            },
+            obo_in_owl::IS_METADATA_TAG => {
+                match bool::from_str(&pv.val) {
+                    Ok(b) => Ok(TypedefClause::IsMetadataTag(b)),
+                    Err(e) => Err(Error::InvalidBoolean(e, pv.val.to_string())),
+                }
             }
         )
     }
