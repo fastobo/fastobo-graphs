@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use fastobo::ast::ClassIdent;
 use fastobo::ast::HeaderFrame;
 use fastobo::ast::HeaderClause;
+use fastobo::ast::NaiveDateTime;
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
@@ -44,10 +45,9 @@ use crate::model::BasicPropertyValue;
 use crate::model::DefinitionPropertyValue;
 use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
-
-use super::FromGraph;
 use crate::error::Error;
 use crate::error::Result;
+use super::FromGraph;
 
 impl FromGraph<Meta> for HeaderFrame {
     fn from_graph(meta: Meta) -> Result<Self> {
@@ -62,6 +62,10 @@ impl FromGraph<BasicPropertyValue> for HeaderClause {
         match pv.pred.as_str() {
             obo_in_owl::HAS_OBO_FORMAT_VERSION => {
                 Ok(HeaderClause::FormatVersion(UnquotedString::new(pv.val)))
+            }
+            dc::DATE | obo_in_owl::CREATION_DATE => {
+                let dt = NaiveDateTime::from_str(&pv.val)?;
+                Ok(HeaderClause::Date(dt))
             }
             // ...TODO... //
             other => {

@@ -36,6 +36,8 @@ use crate::constants::property::dc;
 use crate::constants::property::iao;
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
+use crate::error::Result;
+use crate::error::Error;
 use crate::model::Graph;
 use crate::model::Meta;
 use crate::model::Node;
@@ -44,9 +46,6 @@ use crate::model::BasicPropertyValue;
 use crate::model::DefinitionPropertyValue;
 use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
-
-use crate::error::Result;
-use crate::error::Error;
 use super::FromGraph;
 
 // ---------------------------------------------------------------------------
@@ -170,10 +169,13 @@ macro_rules! impl_basic_pv_common {
                 let id = Ident::from_str(&$pv.val)?;
                 Ok($clause::Namespace(id.into()))
             },
-            dc::DATE => {
-                let date = IsoDateTime::from_str(&$pv.val)?;
-                Ok($clause::CreationDate(date))
-            },
+            obo_in_owl::CREATED_BY | dc::CREATOR => {
+                Ok($clause::CreatedBy(UnquotedString::new($pv.val)))
+            }
+            obo_in_owl::CREATION_DATE | dc::DATE => {
+                let dt = IsoDateTime::from_str(&$pv.val)?;
+                Ok($clause::CreationDate(dt))
+            }
             iao::REPLACED_BY => {
                 let id = Ident::from_str(&$pv.val)?;
                 Ok($clause::ReplacedBy(id.into()))
