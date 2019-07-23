@@ -63,6 +63,7 @@ pub mod property {
         pub const IN_SUBSET: &str = concat!(oboInOwl!(), "inSubset");
         pub const NAMESPACE_ID_RULE: &str = concat!(oboInOwl!(), "NamespaceIdRule");
         pub const SAVED_BY: &str = concat!(oboInOwl!(), "savedBy");
+        pub const SHORTHAND: &str = concat!(oboInOwl!(), "shorthand");
         pub const SUBSET_PROPERTY: &str = concat!(oboInOwl!(), "SubsetProperty");
         pub const SYNONYM_TYPE_PROPERTY: &str = concat!(oboInOwl!(), "SynonymTypeProperty");
 

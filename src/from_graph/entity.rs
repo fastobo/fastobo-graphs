@@ -29,6 +29,7 @@ use fastobo::ast::SubsetIdent;
 use fastobo::ast::InstanceIdent;
 use fastobo::ast::PropertyValue;
 use fastobo::ast::Url;
+use fastobo::ast::Eol;
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
 
@@ -84,7 +85,33 @@ impl FromGraph<Node> for Option<EntityFrame> {
                 impl_frame_inner!(node, id, InstanceIdent, Instance)
             }
             Some(NodeType::Property) => {
-                impl_frame_inner!(node, id, RelationIdent, Typedef)
+                // replace ID with `oboInOwl:shorthand` if possible.
+                match impl_frame_inner!(node, id, RelationIdent, Typedef) {
+                    Ok(Some(EntityFrame::Typedef(mut frame))) => {
+                        if let Some((idx, _)) = frame
+                            .iter()
+                            .enumerate()
+                            .find(|(_, c)| match c.as_inner() {
+                                TypedefClause::PropertyValue(PropertyValue::Resource(rid, value)) => {
+                                    match rid.as_ref() {
+                                        Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
+                                        _ => false,
+                                    }
+                                },
+                                _ => false,
+                            }) {
+                                let new_id = match frame.remove(idx).into_inner() {
+                                    TypedefClause::PropertyValue(PropertyValue::Resource(_, value)) => {
+                                RelationIdent::from(value)
+                            },
+                                    _ => unreachable!()
+                                };
+                                std::mem::replace(frame.id_mut(), new_id.into());
+                            }
+                        Ok(Some(EntityFrame::Typedef(frame)))
+                    }
+                    other => other,
+                }
             }
         }
     }
