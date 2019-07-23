@@ -54,8 +54,8 @@ macro_rules! foundrytest {
     )
 }
 
-foundrytest!(go(go, "go.json"));
-foundrytest!(go_basic(go, "go/go-basic.json"));
-foundrytest!(go_plus(go, "go/extensions/go-plus.json"));
+foundrytest!(#[ignore] go(go, "go.json"));
+foundrytest!(#[ignore] go_basic(go, "go/go-basic.json"));
+foundrytest!(#[ignore] go_plus(go, "go/extensions/go-plus.json"));
 foundrytest!(pato(pato, "pato.json"));
-foundrytest!(mondo(mondo, "mondo.json"));
+foundrytest!(#[ignore] mondo(mondo, "mondo.json"));
