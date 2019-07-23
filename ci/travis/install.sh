@@ -17,8 +17,8 @@ fi
 
 # --- Setup cargo-cache ------------------------------------------------------
 
-LATEST=$(cargo search cargo-cache | grep cargo-cache | cut -f2 -d"\"")
-LOCAL=$(cargo cache --version 2>/dev/null | cut -d" " -f3 || echo "none")
+LATEST=$(cargo search cargo-cache | head -n1 | cut -f2 -d"\"")
+LOCAL=$(cargo cache --version 2>/dev/null | cut -d" " -f2 || echo "none")
 
 if [ "$LATEST" != "$LOCAL" ]; then
         log Installing cargo-cache v$LATEST
