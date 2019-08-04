@@ -90,10 +90,13 @@ impl From<HeaderFrame> for Meta {
                         )
                     );
                 },
+                // NB: Import processed in the header: all imports are merged
+                // together as separate graphs into the same graph document.
                 Import(import) => (),
                 Subsetdef(id, def) => {
                     subsets.push(id.to_string());
                 },
+                // FIXME: declare a new entity.
                 SynonymTypedef(ty, def, optscope) => (),
                 DefaultNamespace(ns) => {
                     basic_property_values.push(

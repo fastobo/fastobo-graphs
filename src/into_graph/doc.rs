@@ -41,15 +41,25 @@ use crate::model::DefinitionPropertyValue;
 use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
 
+// FIXME: one graph per import, final = graph document ?
 impl From<OboDoc> for Graph {
     fn from(mut doc: OboDoc) -> Self {
         let header = replace(doc.header_mut(), HeaderFrame::default());
         let entities = replace(doc.entities_mut(), Vec::new());
 
+        // Extract the graph ID using the `ontology` key
+        let mut id = String::from("http://purl.obolibrary.org/obo/TEMP");
+        for clause in header.iter() {
+            if let HeaderClause::Ontology(s) = clause {
+                id = format!("http://purl.obolibrary.org/obo/{}.owl", s);
+            }
+        }
+
+        // Build the empty graph
         let mut graph = Self {
             nodes: Vec::new(),
             edges: Vec::new(),
-            id: String::from("NONE"),
+            id,
             label: None,
             meta: Box::new(Meta::from(header)),
             equivalent_nodes_sets: Vec::new(),
@@ -58,6 +68,7 @@ impl From<OboDoc> for Graph {
             property_chain_axioms: Vec::new(),
         };
 
+        // Extend the graph with all entities
         for entity in entities.into_iter() {
             let mut entity_graph: Graph = entity.into();
             graph.extend(entity_graph);
