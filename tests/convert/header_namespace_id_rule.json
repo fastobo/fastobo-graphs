@@ -1,0 +1,23 @@
+{
+  "graphs" : [ {
+    "nodes" : [ {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#NamespaceIdRule",
+      "type" : "PROPERTY",
+      "lbl" : "namespace-id-rule"
+    } ],
+    "edges" : [ ],
+    "id" : "http://purl.obolibrary.org/obo/test.owl",
+    "meta" : {
+      "subsets" : [ ],
+      "xrefs" : [ ],
+      "basicPropertyValues" : [ {
+        "pred" : "http://www.geneontology.org/formats/oboInOwl#NamespaceIdRule",
+        "val" : "* TST:$sequence(7,0,9999999)$"
+      } ]
+    },
+    "equivalentNodesSets" : [ ],
+    "logicalDefinitionAxioms" : [ ],
+    "domainRangeAxioms" : [ ],
+    "propertyChainAxioms" : [ ]
+  } ]
+}

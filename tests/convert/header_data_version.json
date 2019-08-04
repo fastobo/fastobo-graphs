@@ -1,0 +1,17 @@
+{
+  "graphs" : [ {
+    "nodes" : [ ],
+    "edges" : [ ],
+    "id" : "http://purl.obolibrary.org/obo/test.owl",
+    "meta" : {
+      "subsets" : [ ],
+      "xrefs" : [ ],
+      "basicPropertyValues" : [ ],
+      "version" : "http://purl.obolibrary.org/obo/test/0.1.0/test.owl"
+    },
+    "equivalentNodesSets" : [ ],
+    "logicalDefinitionAxioms" : [ ],
+    "domainRangeAxioms" : [ ],
+    "propertyChainAxioms" : [ ]
+  } ]
+}
