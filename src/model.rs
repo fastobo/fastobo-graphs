@@ -1,3 +1,5 @@
+use std::iter::FromIterator;
+
 use serde::Deserializer;
 use serde::Deserialize;
 use serde::Serialize;
@@ -5,11 +7,33 @@ use serde::Serialize;
 use crate::utils::serde::optional_vector;
 use crate::utils::serde::nullable_vector;
 
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct GraphDocument {
     #[serde(default, deserialize_with = "optional_vector")]
     pub graphs: Vec<Graph>,
     pub meta: Option<Box<Meta>>,
+}
+
+impl From<Graph> for GraphDocument {
+    fn from(graph: Graph) -> Self {
+        Self {
+            graphs: vec![graph],
+            meta: None,
+        }
+    }
+}
+
+impl FromIterator<Graph> for GraphDocument {
+    fn from_iter<T>(iter: T) -> Self
+    where
+        T: IntoIterator<Item = Graph>
+    {
+        Self {
+            graphs: iter.into_iter().collect(),
+            meta: None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -121,6 +145,15 @@ pub struct ExistentialRestrictionExpression {
     pub property_id: String,
     #[serde(rename = "fillerId")]
     pub filler_id: String,
+}
+
+impl ExistentialRestrictionExpression {
+    pub fn new(property_id: String, filler_id: String) -> Self {
+        Self {
+            property_id,
+            filler_id,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
