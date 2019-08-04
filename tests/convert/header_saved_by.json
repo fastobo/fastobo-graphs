@@ -1,0 +1,19 @@
+{
+  "graphs" : [ {
+    "nodes" : [ ],
+    "edges" : [ ],
+    "id" : "http://purl.obolibrary.org/obo/test.owl",
+    "meta" : {
+      "subsets" : [ ],
+      "xrefs" : [ ],
+      "basicPropertyValues" : [ {
+        "pred" : "http://www.geneontology.org/formats/oboInOwl#savedBy",
+        "val" : "Martin Larralde"
+      } ]
+    },
+    "equivalentNodesSets" : [ ],
+    "logicalDefinitionAxioms" : [ ],
+    "domainRangeAxioms" : [ ],
+    "propertyChainAxioms" : [ ]
+  } ]
+}

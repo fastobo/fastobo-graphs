@@ -26,3 +26,8 @@ mashup = "0.1.9"
 [features]
 default = ["obo"]
 obo = ["fastobo", "mashup"]
+
+[[test]]
+name = "convert"
+path = "tests/convert/mod.rs"
+required-features = ["obo"]
