@@ -56,13 +56,13 @@ impl FromGraph<Meta> for HeaderFrame {
 
         if let Some(ref def) = meta.definition {}
 
+        // QUESTION: is this semantically correct?
         for comment in meta.comments {
             frame.push(HeaderClause::Remark(UnquotedString::new(comment)));
         }
         for pv in meta.basic_property_values {
             frame.push(HeaderClause::from_graph(pv)?);
         }
-
 
         // ... TODO ... //
 

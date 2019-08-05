@@ -63,7 +63,7 @@ impl From<HeaderFrame> for Meta {
                     );
                 },
                 DataVersion(v) => {
-                    // FIXME: use OBO URL instead of OBO short name.
+                    // FIXME: use OBO URL instead of OBO short name ?
                     version = Some(v.into_string());
                 },
                 Date(dt) => {

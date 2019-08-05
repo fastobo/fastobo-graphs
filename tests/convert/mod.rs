@@ -32,7 +32,7 @@ macro_rules! test_impl {
 
                         let obo = fastobo::ast::OboDoc::from_file(obofile).unwrap();
                         let expected: GraphDocument = serde_json::from_reader(jsonfile).unwrap();
-                        let actual = GraphDocument::from(Graph::from(obo));
+                        let actual = obo.into_graph();
 
                         assert_eq!(expected, actual, "graphs do not match!")
                     }

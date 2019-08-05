@@ -29,6 +29,7 @@ use crate::constants::property::dc;
 use crate::constants::property::iao;
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
+use crate::model::Edge;
 use crate::model::Graph;
 use crate::model::Meta;
 use crate::model::Node;
@@ -53,24 +54,23 @@ impl From<TermFrame> for Graph {
         use fastobo::ast::TermClause::*;
 
         //
+        let mut edges = Vec::new();
         let mut meta = Meta::default();
         let mut node = Node {
-            id: term.id().to_string(), // FIXME: urllize
+            id: term.id().to_string(),
             meta: None,
             ty: Some(NodeType::Class),
             label: None
         };
 
-
-
+        //
+        let id = term.id().as_ref().clone();
         for line in term.into_iter() {
             let clause = line.into_inner();
             match clause {
-                IsAnonymous(val) => {
-
-                }
+                IsAnonymous(val) => (),
                 Name(name) => {
-
+                    node.label = Some(name.into_string());
                 }
                 Namespace(ns) => {
                     meta.basic_property_values.push(
@@ -80,22 +80,71 @@ impl From<TermFrame> for Graph {
                         )
                     );
                 }
-                AltId(alt_id) => {}
-                Def(def, xrefs) => {}
+                AltId(alt_id) => {
+                    meta.basic_property_values.push(
+                        BasicPropertyValue::new(
+                            obo_in_owl::HAS_ALTERNATIVE_ID.to_string(),
+                            alt_id.to_string(),
+                        )
+                    );
+                }
+                Def(def, xrefs) => {
+                    meta.definition = Some(Box::new(
+                        DefinitionPropertyValue {
+                            pred: None,
+                            val: def.to_string(),
+                            xrefs: xrefs.iter().map(|x| x.id().to_string()).collect(),
+                            meta: None
+                        }
+                    ))
+                }
                 Comment(comment) => {}
                 Subset(subset) => {}
                 Synonym(syn) => {}
-                Xref(xref) => {}
+                Xref(xref) => {
+                    meta.xrefs.push(
+                        XrefPropertyValue {
+                            pred: None,
+                            val: xref.id().to_string(),
+                            xrefs: Vec::new(),
+                            meta: None,
+                            label: xref.description().map(|d| d.to_string()),
+                        }
+                    )
+                }
                 Builtin(bool) => {}
                 PropertyValue(pv) => {}
-                IsA(cid) => {}
+                IsA(cid) => {
+                    edges.push(
+                        Edge {
+                            sub: id.to_string(),
+                            pred: String::from("is_a"),
+                            obj: cid.to_string(),
+                            meta: None,
+                        }
+                    );
+                }
                 IntersectionOf(optrid, cid) => {}
                 UnionOf(cid) => {}
                 EquivalentTo(cid) => {}
                 DisjointFrom(cid) => {}
                 Relationship(rid, cid) => {}
-                CreatedBy(name) => {}
-                CreationDate(dt) => {}
+                CreatedBy(name) => {
+                    meta.basic_property_values.push(
+                        BasicPropertyValue::new(
+                            obo_in_owl::CREATED_BY.to_string(),
+                            name.to_string(),
+                        )
+                    );
+                }
+                CreationDate(dt) => {
+                    meta.basic_property_values.push(
+                        BasicPropertyValue::new(
+                            obo_in_owl::CREATION_DATE.to_string(),
+                            dt.to_string(),
+                        )
+                    );
+                }
                 IsObsolete(val) => {}
                 ReplacedBy(cid) => {}
                 Consider(cid) => {}
@@ -106,8 +155,8 @@ impl From<TermFrame> for Graph {
 
         Graph {
             id: node.id.clone(),
-            nodes: Some(node).into_iter().collect(),
-            edges: Vec::new(),
+            nodes: vec![node],
+            edges,
             label: None,
             meta: Box::new(Meta::default()),
             equivalent_nodes_sets: Vec::new(),
