@@ -12,6 +12,8 @@ extern crate mashup;
 #[cfg(feature = "obo")]
 extern crate fastobo;
 extern crate serde;
+extern crate serde_json;
+extern crate serde_yaml;
 
 pub mod error;
 pub mod model;
@@ -26,7 +28,7 @@ mod into_graph;
 #[cfg(feature = "obo")]
 pub use from_graph::FromGraph;
 #[cfg(feature = "obo")]
-pub use into_graph::IntoGraphCtx;
+pub use into_graph::IntoGraph;
 
 use std::fs::File;
 use std::io::Read;
@@ -50,4 +52,12 @@ pub fn from_file<P: AsRef<Path>>(path: P) -> Result<GraphDocument> {
     File::open(path)
         .map_err(From::from)
         .and_then(|r| serde_yaml::from_reader(r).map_err(From::from))
+}
+
+
+#[inline]
+pub fn to_file<P: AsRef<Path>>(path: P, g: &GraphDocument) -> Result<()> {
+    File::open(path)
+        .map_err(From::from)
+        .and_then(|r| serde_json::to_writer(r, g).map_err(From::from))
 }

@@ -3,6 +3,8 @@ pub enum Error {
     #[error(display = "{}", 0)]
     YamlError(#[error(cause)] serde_yaml::Error),
     #[error(display = "{}", 0)]
+    JsonError(#[error(cause)] serde_json::Error),
+    #[error(display = "{}", 0)]
     IOError(#[error(cause)] std::io::Error),
     #[error(display = "{}", 0)]
     OboSyntaxError(#[error(cause)] fastobo::error::SyntaxError),
@@ -27,6 +29,12 @@ impl Error {
     /// Create a new `Error::InvalidTermClause` error variant.
     pub fn invalid_term_clause<S: Into<String>>(clause: S) -> Self {
         Error::InvalidTermClause(clause.into())
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Error::JsonError(err)
     }
 }
 

@@ -9,6 +9,7 @@ use std::fs::File;
 use std::path::PathBuf;
 
 use fastobo_graphs::FromGraph;
+use fastobo_graphs::IntoGraph;
 use fastobo_graphs::model::Graph;
 use fastobo_graphs::model::GraphDocument;
 
@@ -32,7 +33,7 @@ macro_rules! test_impl {
 
                         let obo = fastobo::ast::OboDoc::from_file(obofile).unwrap();
                         let expected: GraphDocument = serde_json::from_reader(jsonfile).unwrap();
-                        let actual = obo.into_graph();
+                        let actual = obo.into_graph().unwrap();
 
                         assert_eq!(expected, actual, "graphs do not match!")
                     }
