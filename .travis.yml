@@ -1,10 +1,11 @@
 sudo: false
 dist: xenial
 language: Rust
+
 cache:
   directories:
-    - $HOME/.cargo/bin
-    - $TRAVIS_BUILD_DIR/target
+  - "$HOME/.cargo/bin"
+  - "$TRAVIS_BUILD_DIR/target"
 
 rust:
 - stable
@@ -16,6 +17,7 @@ env:
   - PATH="$HOME/.cargo/bin:$PATH"
   - RUST_BACKTRACE=full
   - RUSTFLAGS="-Ctarget-cpu=native"
+  - secure: oq8RGwEzdFbIs3gsxPNK4+c8H93WIoAhl68+fqKr+Xhf9ahDEdqgX+0rcGDcK9gClZkYsnOSUzL8I5xgq69TfMQUmD1R+ffos6Rs1jEwEdhp8FrbygBG/ecbo/UejDwaFBRuJRIRpkVNotweffNu3Fsh6nPfs+E5RhlR+AN+El5v2GfYOHJ0DXBe5O5gw9kspmLxjXa1s/Ugc7xac5ZcuMAcx51c1n2ZEGK/r2qo3v1muDlcbKXIG/jaakRdLQO8qqXnE9hG8VoIlHeMhAIkQ+oedLKSn4wQkFjV9lwOnE4rgp0xE1lL4ZW/5zUF+mCnBRSKbxYm739AVozu7bQtgdFUPMcaAWPSNqSfqbNB5iuHLc67UiN1+SHOtoTtLbhnRck1P9+yAh9XEDWj2KvrBv7+XIPcjV++dWkt2mf2AO2jNZMJZym2ArKJRvMBOwoyPdADPoPO0tUpyuGrPcCE+jBKt8KXrSFBsUfRqpSgkJwpsyNGKMjHZC6iB3GQyoeces+c1TUGEUAKNG/lqZwhiQBrzJEeIGAHTJfby0i7NnEaNJQYsX2C6I3QYET7q8cZW8zJzXUNYZb916FKJ5645T1FvYFkNjZ5Up3qnvDG0xsnowuKviOmmaX/VrBiHCnVJ5ldrpUnBjOvtyjwptIXY+Pr0KvWX6xddhCR9yRS1m8=
 
 git:
   depth: false
@@ -38,7 +40,6 @@ deploy:
   on:
     rust: stable
     tags: true
-
 
 notifications:
   email:

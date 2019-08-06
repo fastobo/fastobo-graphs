@@ -3,6 +3,13 @@ name = "fastobo-graphs"
 version = "0.1.0"
 authors = ["Martin Larralde <martin.larralde@ens-paris-saclay.fr>"]
 edition = "2018"
+license = "MIT"
+description = "OBO Graphs data model, decoder and encoder in Rust."
+repository = "https://github.com/fastobo/fastobo-graphs"
+homepage = "https://github.com/fastobo/fastobo-graphs"
+readme = "README.md"
+keywords = ["obo", "graphs", "ontology", "serde", "parser"]
+categories = ["science", "parser-implementations"]
 exclude = ["obographs"]
 
 [badges.travis-ci]
@@ -25,7 +32,6 @@ err-derive = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 fastobo = { version = "0.7.0", optional = true }
 mashup = { version = "0.1.9", optional = true }
-# re = { version = "*", optional = true }
 
 [dev-dependencies]
 lazy_static = "1.3"
