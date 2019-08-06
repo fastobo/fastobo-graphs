@@ -77,6 +77,7 @@ macro_rules! test_impl {
 
 test_impl!(
     header_data_version,
+    header_date,
     header_default_namespace,
     header_format_version,
     header_namespace_id_rule,
