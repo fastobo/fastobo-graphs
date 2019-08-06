@@ -51,7 +51,7 @@ impl Context {
 
 impl From<&OboDoc> for Context {
     fn from(doc: &OboDoc) -> Self {
-        /// Add the ID spaces declared implicitly in the document.
+        // Add the ID spaces declared implicitly in the document.
         let mut idspaces = HashMap::new();
         idspaces.insert(
             IdentPrefix::new("BFO"),
@@ -92,10 +92,13 @@ impl From<&OboDoc> for Context {
     }
 }
 
-pub trait IntoGraphCtx<T> {
+/// Trait to convert an OBO syntax node into an OBO graph element.
+trait IntoGraphCtx<T> {
     fn into_graph_ctx(self, ctx: &mut Context) -> Result<T>;
 }
 
+/// Trait to convert an OBO document into a complete OBO graph document.
+#[cfg_attr(feature = "_doc", doc(cfg(feature = "obo")))]
 pub trait IntoGraph {
     fn into_graph(self) -> Result<GraphDocument>;
 }

@@ -20,14 +20,24 @@ uris! {
 }
 
 // --- Base URIs -------------------------------------------------------------
+
+/// Base URIs used in the Open Biomedical Ontologies semantic vocabulary.
 pub mod uri {
+    /// The Dublin Core Metadata Element Set, version 1.1.
     pub const DC: &str = dc!();
+    /// The Open Biomedical Ontologies base URI.
     pub const OBO: &str = obo!();
+    /// The OBO in OWL mappings defined by the Gene Ontology project.
     pub const OBO_IN_OWL: &str = oboInOwl!();
+    /// The Ontology Web Language base URI
     pub const OWL: &str = owl!();
+    /// The RDF Concepts Vocabulary (RDF) namespace URI.
     pub const RDF: &str = rdf!();
+    /// The RDF Schema vocabulary.
     pub const RDFS: &str = rdfs!();
+    /// The "xml:" namespace URI for the XML 1.0 specification.
     pub const XML: &str = xml!();
+    /// The XML Schema namespace URI.
     pub const XSD: &str = xsd!();
 }
 

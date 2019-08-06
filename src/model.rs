@@ -1,3 +1,9 @@
+//! The OBO Graphs data model and serde implementation.
+//!
+//! # See Also
+//! The [OBO Graphs JSON schema](https://github.com/geneontology/obographs/tree/master/schema)
+//! developed in the Gene Ontology project.
+
 use std::iter::FromIterator;
 
 use serde::Deserializer;

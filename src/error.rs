@@ -1,3 +1,6 @@
+//! Standard error implementation for this crate.
+
+/// The error type for this crate.
 #[derive(Debug, Error)]
 pub enum Error {
     #[error(display = "{}", 0)]
@@ -18,6 +21,7 @@ pub enum Error {
     InvalidInstanceClause(String),
 }
 
+/// The result type for this crate.
 pub type Result<T> = std::result::Result<T, Error>;
 
 impl Error {

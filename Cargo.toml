@@ -16,7 +16,7 @@ repository = "fastobo/fastobo-graphs"
 status     = "actively-developed"
 
 [package.metadata.docs.rs]
-features = [ "_doc" ]
+features = [ "_doc", "obo" ]
 
 [dependencies]
 serde_yaml = "0.8"

@@ -10,7 +10,6 @@ use std::path::PathBuf;
 
 use fastobo_graphs::FromGraph;
 use fastobo_graphs::IntoGraph;
-use fastobo_graphs::model::Graph;
 use fastobo_graphs::model::GraphDocument;
 
 macro_rules! test_impl {
@@ -31,7 +30,7 @@ macro_rules! test_impl {
                         let obofile = basename.with_extension("obo");
                         let jsonfile = File::open(basename.with_extension("json")).unwrap();
 
-                        let obo = fastobo::ast::OboDoc::from_file(obofile).unwrap();
+                        let obo = fastobo::from_file(obofile).unwrap();
                         let expected: GraphDocument = serde_json::from_reader(jsonfile).unwrap();
                         let actual = obo.into_graph().unwrap();
 
@@ -59,7 +58,7 @@ macro_rules! test_impl {
                         let obofile = basename.with_extension("obo");
                         let jsonfile = File::open(basename.with_extension("json")).unwrap();
 
-                        let expected = fastobo::ast::OboDoc::from_file(obofile).unwrap();
+                        let expected = fastobo::from_file(obofile).unwrap();
                         let doc: GraphDocument = serde_json::from_reader(jsonfile).unwrap();
                         let graph = doc.graphs.into_iter().next().unwrap();
                         let actual = fastobo::ast::OboDoc::from_graph(graph).unwrap();
