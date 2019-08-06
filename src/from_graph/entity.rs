@@ -182,9 +182,6 @@ impl_definition_pv!(InstanceClause);
 macro_rules! impl_basic_pv_common {
     ($pv:ident, $clause:ident, $x:ident $(, $l:pat => $r:expr )* ) => {{
         match $x {
-            dc::CREATOR => {
-                Ok($clause::CreatedBy(UnquotedString::new($pv.val)))
-            },
             rdfs::COMMENT => {
                 Ok($clause::Comment(UnquotedString::new($pv.val)))
             },
