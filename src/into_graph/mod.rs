@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
+use fastobo::ast::Ident;
+use fastobo::ast::UnprefixedIdent;
 use fastobo::ast::IdentPrefix;
 use fastobo::ast::OboDoc;
 use fastobo::ast::HeaderClause;
@@ -20,9 +22,31 @@ pub struct Context {
     pub idspaces: HashMap<IdentPrefix, Url>,
     pub ontology_iri: Url,
     pub current_frame: Url,
+    pub shorthands: HashMap<UnprefixedIdent, Ident>,
 
     // pub in_annotation: bool,
     // pub class_level: HashSet<Url>,
+}
+
+impl Context {
+    /// Expand an identifier into the semantically-equivalent URI.
+    pub fn expand<I: AsRef<Ident>>(&self, id: I) -> String {
+        match id.as_ref() {
+            Ident::Url(url) => url.to_string(),
+            Ident::Prefixed(prf) => {
+                match self.idspaces.get(prf.prefix()) {
+                    Some(url) => format!("{}{}", url, prf.local()),
+                    None => format!("{}{}_{}", uri::OBO, prf.prefix(), prf.local())
+                }
+            }
+            Ident::Unprefixed(unp) => {
+                match self.shorthands.get(unp) {
+                    Some(id) => self.expand(id),
+                    None => format!("{}#{}", self.ontology_iri, unp),
+                }
+            }
+        }
+    }
 }
 
 impl From<&OboDoc> for Context {
@@ -57,12 +81,14 @@ impl From<&OboDoc> for Context {
         }
 
         // Create the conversion context (FIXME: remove the unwraps ?).
+        let shorthands = HashMap::new();
         let ontology_iri = Url::parse(&format!("{}{}", uri::OBO, ontology.unwrap())).unwrap();
         let current_frame = ontology_iri.clone();
         Context {
             idspaces,
             ontology_iri,
-            current_frame
+            current_frame,
+            shorthands,
         }
     }
 }

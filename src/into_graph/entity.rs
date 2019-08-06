@@ -29,6 +29,7 @@ use crate::constants::property::dc;
 use crate::constants::property::iao;
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
+use crate::error::Result;
 use crate::model::Edge;
 use crate::model::Graph;
 use crate::model::Meta;
@@ -39,33 +40,36 @@ use crate::model::DefinitionPropertyValue;
 use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
 
-impl From<EntityFrame> for Graph {
-    fn from(frame: EntityFrame) -> Self {
-        match frame {
-            EntityFrame::Term(t) => t.into(),
-            EntityFrame::Typedef(t) => t.into(),
-            EntityFrame::Instance(t) => t.into(),
+use super::Context;
+use super::IntoGraphCtx;
+
+impl IntoGraphCtx<Graph> for EntityFrame {
+    fn into_graph_ctx(self, ctx: &mut Context) -> Result<Graph> {
+        match self {
+            EntityFrame::Term(t) => t.into_graph_ctx(ctx),
+            EntityFrame::Typedef(t) => t.into_graph_ctx(ctx),
+            EntityFrame::Instance(t) => t.into_graph_ctx(ctx),
         }
     }
 }
 
-impl From<TermFrame> for Graph {
-    fn from(term: TermFrame) -> Self {
+impl IntoGraphCtx<Graph> for TermFrame {
+    fn into_graph_ctx(self, ctx: &mut Context) -> Result<Graph> {
         use fastobo::ast::TermClause::*;
 
         //
         let mut edges = Vec::new();
         let mut meta = Meta::default();
         let mut node = Node {
-            id: term.id().to_string(),
+            id: ctx.expand(self.id().as_inner()), // FIXME ?
             meta: None,
             ty: Some(NodeType::Class),
             label: None
         };
 
         //
-        let id = term.id().as_ref().clone();
-        for line in term.into_iter() {
+        let current_id = ctx.expand(self.id().as_inner());
+        for line in self.into_iter() {
             let clause = line.into_inner();
             match clause {
                 IsAnonymous(val) => (),
@@ -93,7 +97,7 @@ impl From<TermFrame> for Graph {
                         DefinitionPropertyValue {
                             pred: None,
                             val: def.to_string(),
-                            xrefs: xrefs.iter().map(|x| x.id().to_string()).collect(),
+                            xrefs: xrefs.iter().map(|x| ctx.expand(x.id())).collect(),
                             meta: None
                         }
                     ))
@@ -105,7 +109,7 @@ impl From<TermFrame> for Graph {
                     meta.xrefs.push(
                         XrefPropertyValue {
                             pred: None,
-                            val: xref.id().to_string(),
+                            val:  ctx.expand(xref.id()),
                             xrefs: Vec::new(),
                             meta: None,
                             label: xref.description().map(|d| d.to_string()),
@@ -117,9 +121,9 @@ impl From<TermFrame> for Graph {
                 IsA(cid) => {
                     edges.push(
                         Edge {
-                            sub: id.to_string(),
+                            sub: current_id.clone(),
                             pred: String::from("is_a"),
-                            obj: cid.to_string(),
+                            obj: ctx.expand(cid),
                             meta: None,
                         }
                     );
@@ -152,8 +156,7 @@ impl From<TermFrame> for Graph {
         }
 
         node.meta = Some(Box::new(meta));
-
-        Graph {
+        Ok(Graph {
             id: node.id.clone(),
             nodes: vec![node],
             edges,
@@ -163,40 +166,40 @@ impl From<TermFrame> for Graph {
             logical_definition_axioms: Vec::new(),
             domain_range_axioms: Vec::new(),
             property_chain_axioms: Vec::new(),
-        }
+        })
     }
 }
 
-impl From<TypedefFrame> for Graph {
-    fn from(typedef: TypedefFrame) -> Self {
+impl IntoGraphCtx<Graph> for TypedefFrame {
+    fn into_graph_ctx(self, ctx: &mut Context) -> Result<Graph> {
         // ... TODO ... //
-        Graph {
+        Ok(Graph {
             nodes: Vec::new(),
             edges: Vec::new(),
-            id: typedef.id().to_string(),
+            id: ctx.expand(self.id().as_ref()),
             label: None,
             meta: Box::new(Meta::default()),
             equivalent_nodes_sets: Vec::new(),
             logical_definition_axioms: Vec::new(),
             domain_range_axioms: Vec::new(),
             property_chain_axioms: Vec::new(),
-        }
+        })
     }
 }
 
-impl From<InstanceFrame> for Graph {
-    fn from(instance: InstanceFrame) -> Self {
+impl IntoGraphCtx<Graph> for InstanceFrame {
+    fn into_graph_ctx(self, ctx: &mut Context) -> Result<Graph> {
         // ... TODO ... //
-        Graph {
+        Ok(Graph {
             nodes: Vec::new(),
             edges: Vec::new(),
-            id: instance.id().to_string(),
+            id: ctx.expand(self.id().as_ref()),
             label: None,
             meta: Box::new(Meta::default()),
             equivalent_nodes_sets: Vec::new(),
             logical_definition_axioms: Vec::new(),
             domain_range_axioms: Vec::new(),
             property_chain_axioms: Vec::new(),
-        }
+        })
     }
 }

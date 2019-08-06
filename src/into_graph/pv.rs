@@ -1,14 +1,20 @@
 use fastobo::ast::PropertyValue;
-use crate::model::BasicPropertyValue;
 
-impl From<PropertyValue> for BasicPropertyValue {
-    fn from(pv: PropertyValue) -> Self {
-        match pv {
+use crate::model::BasicPropertyValue;
+use crate::error::Result;
+
+use super::Context;
+use super::IntoGraphCtx;
+
+
+impl IntoGraphCtx<BasicPropertyValue> for PropertyValue {
+    fn into_graph_ctx(self, ctx: &mut Context) -> Result<BasicPropertyValue> {
+        match self {
             PropertyValue::Resource(rel, id) => {
-                BasicPropertyValue::new(rel.to_string(), id.to_string())
+                Ok(BasicPropertyValue::new(ctx.expand(rel), ctx.expand(id)))
             }
             PropertyValue::Literal(rel, value, ty) => {
-                BasicPropertyValue::new(rel.to_string(), value.into_string())
+                Ok(BasicPropertyValue::new(ctx.expand(rel), value.into_string()))
             }
         }
     }

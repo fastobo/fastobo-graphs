@@ -30,6 +30,7 @@ use crate::constants::property::dc;
 use crate::constants::property::iao;
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
+use crate::error::Result;
 use crate::model::Graph;
 use crate::model::Meta;
 use crate::model::Node;
@@ -39,8 +40,11 @@ use crate::model::DefinitionPropertyValue;
 use crate::model::SynonymPropertyValue;
 use crate::model::XrefPropertyValue;
 
-impl From<HeaderFrame> for Meta {
-    fn from(frame: HeaderFrame) -> Self {
+use super::Context;
+use super::IntoGraphCtx;
+
+impl IntoGraphCtx<Meta> for HeaderFrame {
+    fn into_graph_ctx(self, ctx: &mut Context) -> Result<Meta> {
         use fastobo::ast::HeaderClause::*;
 
         let mut definition = None;
@@ -52,7 +56,7 @@ impl From<HeaderFrame> for Meta {
         let mut version = None;
         let mut deprecated = false;
 
-        for clause in frame.into_iter() {
+        for clause in self.into_iter() {
             match clause {
                 FormatVersion(v) => {
                     basic_property_values.push(
@@ -122,7 +126,7 @@ impl From<HeaderFrame> for Meta {
                 TreatXrefsAsIsA(prefix) => (),
                 TreatXrefsAsHasSubclass(prefix) => (),
                 PropertyValue(pv) => {
-                    basic_property_values.push(BasicPropertyValue::from(pv));
+                    basic_property_values.push(pv.into_graph_ctx(ctx)?);
                 },
                 Remark(remark) => {
                     comments.push(remark.into_string());
@@ -133,7 +137,7 @@ impl From<HeaderFrame> for Meta {
             }
         }
 
-        Self {
+        Ok(Meta {
             definition,
             comments,
             subsets,
@@ -142,6 +146,6 @@ impl From<HeaderFrame> for Meta {
             basic_property_values,
             version,
             deprecated,
-        }
+        })
     }
 }

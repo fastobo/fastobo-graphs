@@ -57,7 +57,6 @@ impl IntoGraphCtx<GraphDocument> for OboDoc {
         //        *shorthand* relationship.
         self.treat_xrefs();
         self.assign_namespaces();
-        IdDecompactor::new().visit_doc(&mut self); // FIXME (for shorthand rel)?
 
         // Take ownership over the header and the entities.
         let header = replace(self.header_mut(), HeaderFrame::default());
@@ -79,7 +78,7 @@ impl IntoGraphCtx<GraphDocument> for OboDoc {
             edges: Vec::new(),
             id: ctx.ontology_iri.to_string(),
             label: None,
-            meta: Box::new(Meta::from(header)),
+            meta: header.into_graph_ctx(ctx).map(Box::new)?,
             equivalent_nodes_sets: Vec::new(),
             logical_definition_axioms: Vec::new(),
             domain_range_axioms: Vec::new(),
@@ -90,7 +89,7 @@ impl IntoGraphCtx<GraphDocument> for OboDoc {
         for entity in entities.into_iter() {
             // let mut entity_graph = entity.into_graph_ctx(ctx)?;
             // graph.extend(entity_graph);
-            let mut entity_graph = entity.into();
+            let mut entity_graph = entity.into_graph_ctx(ctx)?;
             graph.extend(entity_graph);
         }
 
@@ -101,6 +100,7 @@ impl IntoGraphCtx<GraphDocument> for OboDoc {
 }
 
 impl IntoGraph for OboDoc {
+    #[inline]
     fn into_graph(self) -> Result<GraphDocument> {
         let mut ctx = Context::from(&self);
         self.into_graph_ctx(&mut ctx)
