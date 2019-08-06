@@ -31,6 +31,8 @@ use fastobo::ast::PropertyValue;
 use fastobo::ast::Url;
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
+use fastobo::visit::VisitMut;
+use fastobo::visit::IdCompactor;
 
 use crate::constants::property::dc;
 use crate::constants::property::iao;
@@ -155,6 +157,8 @@ impl FromGraph<Graph> for OboDoc {
 
         let mut doc = OboDoc::with_header(header).and_entities(entities);
         doc.sort();
+        IdCompactor::new().visit_doc(&mut doc);
+
         Ok(doc)
     }
 }
