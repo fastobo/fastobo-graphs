@@ -52,25 +52,12 @@ use super::IntoGraphCtx;
 // FIXME: one graph per import, final = graph document ?
 impl IntoGraphCtx<GraphDocument> for OboDoc {
     fn into_graph_ctx(mut self, ctx: &mut Context) -> Result<GraphDocument> {
-        // Preprocess the document (macros, default namespace, urlize)
-        // FIXME: the ID decompactor should make sure to preprocess the
-        //        *shorthand* relationship.
+        // Preprocess the document if it contains *treat-xrefs* macros.
         self.treat_xrefs();
-        self.assign_namespaces();
 
         // Take ownership over the header and the entities.
         let header = replace(self.header_mut(), HeaderFrame::default());
         let entities = replace(self.entities_mut(), Vec::new());
-
-        // Extract the graph ID using the `ontology` key
-        // NB: `http://purl.obolibrary.org/obo/TEMP` is used as the default
-        //     ontology IRI by the OWL API as well.
-        let mut id = String::from("http://purl.obolibrary.org/obo/TEMP");
-        for clause in header.iter() {
-            if let HeaderClause::Ontology(s) = clause {
-                id = format!("http://purl.obolibrary.org/obo/{}.owl", s);
-            }
-        }
 
         // Build the empty graph
         let mut graph = Graph {

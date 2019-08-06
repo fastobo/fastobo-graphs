@@ -67,14 +67,14 @@ impl From<&OboDoc> for Context {
         );
 
         // Add the prefixes and ID spaces from the OBO header.
-        let mut ontology = None;
+        let mut ontology_iri = Url::parse("http://purl.obolibrary.org/obo/TEMP").unwrap();
         for clause in doc.header() {
             match clause {
                 HeaderClause::Idspace(prefix, url, _) => {
                     idspaces.insert(prefix.clone(), url.clone());
                 }
-                HeaderClause::Ontology(id) => {
-                    ontology = Some(id.to_string());
+                HeaderClause::Ontology(slug) => {
+                    ontology_iri = Url::parse(&format!("{}{}.owl", uri::OBO, slug)).unwrap();
                 }
                 _ => (),
             }
@@ -82,7 +82,6 @@ impl From<&OboDoc> for Context {
 
         // Create the conversion context (FIXME: remove the unwraps ?).
         let shorthands = HashMap::new();
-        let ontology_iri = Url::parse(&format!("{}{}", uri::OBO, ontology.unwrap())).unwrap();
         let current_frame = ontology_iri.clone();
         Context {
             idspaces,
