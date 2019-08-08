@@ -81,7 +81,7 @@ macro_rules! impl_frame_common {
                 $meta.definition = Some(Box::new(
                     DefinitionPropertyValue {
                         pred: None,
-                        val: def.to_string(),
+                        val: def.into_string(),
                         xrefs: xrefs.iter().map(|x| $ctx.expand(x.id())).collect(),
                         meta: None
                     }
@@ -97,7 +97,7 @@ macro_rules! impl_frame_common {
                         val:  $ctx.expand(xref.id()),
                         xrefs: Vec::new(),
                         meta: None,
-                        label: xref.description().map(|d| d.to_string()),
+                        label: xref.description().map(|d| d.clone().into_string()),
                     }
                 )
             }
@@ -130,7 +130,7 @@ macro_rules! impl_frame_common {
                 $meta.basic_property_values.push(
                     BasicPropertyValue::new(
                         obo_in_owl::CREATED_BY.to_string(),
-                        name.to_string(),
+                        name.into_string(),
                     )
                 );
             }
