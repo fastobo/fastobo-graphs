@@ -75,5 +75,5 @@ pub fn to_writer<W: Write>(w: W, g: &GraphDocument) -> Result<()> {
 /// Write an OBO graph to a file on the local filesystem.
 #[inline]
 pub fn to_file<P: AsRef<Path>>(path: P, g: &GraphDocument) -> Result<()> {
-    File::open(path).map_err(From::from).and_then(|w| to_writer(w, g))
+    File::create(path).map_err(From::from).and_then(|w| to_writer(w, g))
 }
