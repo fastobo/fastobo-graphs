@@ -20,6 +20,59 @@ the Gene Ontology to provide developers with a data format easier to use than
 plain ontology files in [OBO](http://owlcollab.github.io/oboformat/doc/obo-syntax.html)
 or [OWL](https://www.w3.org/TR/owl2-syntax/) format.
 
+* **Data structures** - the complete OBO Graphs schema is reproduced into Rust
+  data structures with public fields for direct access to the graphs nodes. See
+  [`fastobo_graphs::model`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/model/index.html)
+  to see the comprehensive list of data structures.
+* **I/O** - structures use [`serde`](https://docs.rs/serde) to implement
+  serialization and deserialization from both YAML and JSON.
+* **Errors** - fallible operations can return an
+  [`Error`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/error/enum.Error.html)
+  with informative messages as well as an
+  [`std::error::Error`](https://doc.rust-lang.org/std/error/trait.Error.html)
+  implementation.
+* **Conversion traits** - OBO Graphs can be (partially) converted to and from
+  plain OBO documents, using the
+  [`FromGraph`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/trait.FromGraph.html) and
+  [`IntoGraph`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/trait.IntoGraph.html) traits.
+
+## Usage
+
+Add `fastobo_graphs` to the `[dependencies]` sections of your `Cargo.toml`
+manifest:
+```toml
+[dependencies]
+fastobo_graphs = "0.1"
+```
+
+Then use one of the top-level functions in `fastobo_graphs` to load a JSON or
+YAML serialized OBO Graph:
+```rust
+extern crate fastobo_graphs;
+extern crate ureq;
+
+fn main() {
+    let response = ureq::get("http://purl.obolibrary.org/obo/zeco.json").call();
+    let doc = ;
+
+    match fastobo_graphs::from_reader(response.into_reader()) {
+        Ok(doc) => println!("Number of ZECO nodes: {}", doc.graphs[0].nodes.len()),
+        Err(e) => panic!("Could not parse ZECO OBO Graph: {}", e),
+    }
+}
+```
+
+## Features
+
+The following feature is enabled by default, but can be disabled if needed:
+
+* ***obo*** - compile
+  [`FromGraph`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/trait.FromGraph.html) and
+  [`IntoGraph`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/trait.IntoGraph.html)
+  traits that can be used to convert between a
+  [`GraphDocument`](https://docs.rs/fastobo-graphs/latest/fastobo_graphs/model/struct.GraphDocument.html)
+  and an [`OboDoc`](https://docs.rs/fastobo/latest/fastobo/ast/struct.OboDoc.html).
+
 
 ## Feedback
 
