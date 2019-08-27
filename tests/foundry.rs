@@ -59,3 +59,4 @@ foundrytest!(#[ignore] go_basic(go, "go/go-basic.json"));
 foundrytest!(#[ignore] go_plus(go, "go/extensions/go-plus.json"));
 foundrytest!(pato(pato, "pato.json"));
 foundrytest!(#[ignore] mondo(mondo, "mondo.json"));
+foundrytest!(#[ignore] zeco(zeco, "zeco.json"));
