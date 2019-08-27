@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.1.2...HEAD
+
+
+## [v0.1.2] - 2019-08-27
+
+[v0.1.2]: https://github.com/fastobo/fastobo-graphs/compare/v0.1.1...v0.1.2
+
+### Fixed
+- Fixed `to_string` being used instead of `into_string` in some `IntoGraphCtx` impl.
+
+### Added
+- Added BOSC 2019 poster reference to `README.md`.
 
 
 ## [v0.1.1] - 2019-08-08
