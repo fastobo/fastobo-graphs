@@ -67,5 +67,5 @@ pub mod convert {
     test_impl!(logicalDefinitionTest);
     test_impl!(nucleus);
     test_impl!(obsoletion_example);
-    // test_impl!(ro); // SKIP: contains invalid URL
+    test_impl!(ro);
 }
