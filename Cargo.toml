@@ -28,7 +28,7 @@ features = [ "_doc", "obo" ]
 [dependencies]
 serde_yaml = "0.8"
 serde_json = "1.0"
-err-derive = "0.1"
+err-derive = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 fastobo = { version = "0.7.0", optional = true }
 mashup = { version = "0.1.9", optional = true }

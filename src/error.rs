@@ -35,27 +35,3 @@ impl Error {
         Error::InvalidTermClause(clause.into())
     }
 }
-
-impl From<serde_json::Error> for Error {
-    fn from(err: serde_json::Error) -> Self {
-        Error::JsonError(err)
-    }
-}
-
-impl From<serde_yaml::Error> for Error {
-    fn from(err: serde_yaml::Error) -> Self {
-        Error::YamlError(err)
-    }
-}
-
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self {
-        Error::IOError(err)
-    }
-}
-
-impl From<fastobo::error::SyntaxError> for Error {
-    fn from(err: fastobo::error::SyntaxError) -> Self {
-        Error::OboSyntaxError(err)
-    }
-}
