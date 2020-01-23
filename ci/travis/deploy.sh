@@ -4,7 +4,7 @@
 
 # --- Deploy crate -----------------------------------------------------------
 
-log Deploying \`$(basename $TRAVIS_REPO_SLUG)\` v$TRAVIS_TAG
+log Deploying \`$(basename $TRAVIS_REPO_SLUG)\` $TRAVIS_TAG
 cargo publish --manifest-path Cargo.toml --token $CRATES_IO_TOKEN
 
 
