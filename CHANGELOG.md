@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.2.0...HEAD
+
+
+## [v0.2.0] - 2020-01-23
+
+[v0.2.0]: https://github.com/fastobo/fastobo-graphs/compare/v0.1.2...v0.2.0
+
+### Changed
+- Bumped `fastobo` version to `v0.8.0`.
 
 
 ## [v0.1.2] - 2019-08-27
