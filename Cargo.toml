@@ -39,7 +39,7 @@ pretty_assertions = "0.6.1"
 obofoundry = "0.6"
 serde_json = "1.0"
 serde_yaml = "0.8"
-ureq = "0.12"
+ureq = "1.0"
 fastobo = "0.8.0"
 mashup = "0.1.9"
 
