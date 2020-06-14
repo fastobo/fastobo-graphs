@@ -102,11 +102,11 @@ impl FromGraph<Node> for Option<EntityFrame> {
                             }) {
                                 let new_id = match frame.remove(idx).into_inner() {
                                     TypedefClause::PropertyValue(PropertyValue::Resource(_, value)) => {
-                                RelationIdent::from(value)
-                            },
+                                        RelationIdent::from(value)
+                                    },
                                     _ => unreachable!()
                                 };
-                                std::mem::replace(frame.id_mut(), new_id.into());
+                                *frame.id_mut() = new_id.into();
                             }
                         Ok(Some(EntityFrame::Typedef(frame)))
                     }
