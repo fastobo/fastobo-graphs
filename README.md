@@ -43,7 +43,7 @@ Add `fastobo_graphs` to the `[dependencies]` sections of your `Cargo.toml`
 manifest:
 ```toml
 [dependencies]
-fastobo-graphs = "0.3"
+fastobo-graphs = "0.4"
 ```
 
 Then use one of the top-level functions in `fastobo_graphs` to load a JSON or
