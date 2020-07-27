@@ -128,7 +128,7 @@ macro_rules! impl_meta {
                     clauses.push($clause::from_graph(*desc)?)
                 }
                 for comment in meta.comments {
-                    clauses.push($clause::Comment(UnquotedString::from(comment)));
+                    clauses.push($clause::Comment(UnquotedString::new(comment)));
                 }
                 for subset in meta.subsets {
                     let id = SubsetIdent::from_str(&subset)?;
