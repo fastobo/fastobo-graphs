@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::collections::HashSet;
+
 
 use fastobo::ast::Ident;
 use fastobo::ast::UnprefixedIdent;
@@ -8,7 +8,7 @@ use fastobo::ast::OboDoc;
 use fastobo::ast::HeaderClause;
 use fastobo::ast::Url;
 
-use super::error::Error;
+
 use super::error::Result;
 use super::model::GraphDocument;
 use super::constants::uri;

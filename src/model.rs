@@ -6,7 +6,7 @@
 
 use std::iter::FromIterator;
 
-use serde::Deserializer;
+
 use serde::Deserialize;
 use serde::Serialize;
 

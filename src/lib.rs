@@ -2,7 +2,7 @@
 #![cfg_attr(feature = "_doc", doc(include = "../README.md"))]
 #![warn(clippy::all)]
 #![recursion_limit="128"]
-#![allow(unused_imports, unused_mut, unused_variables, dead_code)]
+#![allow(unused_variables, dead_code)]
 
 #[macro_use]
 extern crate err_derive;

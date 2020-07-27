@@ -1,50 +1,50 @@
 use std::mem::replace;
 
-use fastobo::ast::HeaderClause;
-use fastobo::ast::EntityFrame;
-use fastobo::ast::Ident;
-use fastobo::ast::QuotedString;
-use fastobo::ast::Synonym;
-use fastobo::ast::OboDoc;
-use fastobo::ast::SynonymScope;
-use fastobo::ast::TermClause;
-use fastobo::ast::TypedefClause;
-use fastobo::ast::HeaderFrame;
-use fastobo::ast::InstanceClause;
-use fastobo::ast::TermFrame;
-use fastobo::ast::IsoDateTime;
-use fastobo::ast::InstanceFrame;
-use fastobo::ast::TypedefFrame;
-use fastobo::ast::Line;
-use fastobo::ast::UnquotedString;
-use fastobo::ast::Xref;
-use fastobo::ast::XrefList;
-use fastobo::ast::RelationIdent;
-use fastobo::ast::PrefixedIdent;
-use fastobo::ast::SubsetIdent;
-use fastobo::ast::InstanceIdent;
-use fastobo::ast::PropertyValue;
-use fastobo::ast::Url;
-use fastobo::semantics::Identified;
-use fastobo::semantics::Orderable;
-use fastobo::visit::VisitMut;
-use fastobo::visit::IdDecompactor;
 
-use crate::constants::property::dc;
-use crate::constants::property::iao;
-use crate::constants::property::obo_in_owl;
-use crate::constants::property::rdfs;
-use crate::error::Error;
+
+
+
+
+use fastobo::ast::OboDoc;
+
+
+
+use fastobo::ast::HeaderFrame;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 use crate::error::Result;
 use crate::model::GraphDocument;
 use crate::model::Graph;
-use crate::model::Meta;
-use crate::model::Node;
-use crate::model::NodeType;
-use crate::model::BasicPropertyValue;
-use crate::model::DefinitionPropertyValue;
-use crate::model::SynonymPropertyValue;
-use crate::model::XrefPropertyValue;
+
+
+
+
+
+
+
 use super::Context;
 use super::IntoGraph;
 use super::IntoGraphCtx;
@@ -76,7 +76,7 @@ impl IntoGraphCtx<GraphDocument> for OboDoc {
         for entity in entities.into_iter() {
             // let mut entity_graph = entity.into_graph_ctx(ctx)?;
             // graph.extend(entity_graph);
-            let mut entity_graph = entity.into_graph_ctx(ctx)?;
+            let entity_graph = entity.into_graph_ctx(ctx)?;
             graph.extend(entity_graph);
         }
 

@@ -1,51 +1,51 @@
-use std::mem::replace;
+
 use std::str::FromStr;
-use std::string::ToString;
+
 use std::collections::HashMap;
 
 use fastobo::ast::ClassIdent;
-use fastobo::ast::HeaderFrame;
-use fastobo::ast::HeaderClause;
+
+
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
-use fastobo::ast::QuotedString;
-use fastobo::ast::Synonym;
+
+
 use fastobo::ast::OboDoc;
-use fastobo::ast::SynonymScope;
+
 use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
 use fastobo::ast::InstanceClause;
-use fastobo::ast::TermFrame;
-use fastobo::ast::IsoDateTime;
-use fastobo::ast::InstanceFrame;
-use fastobo::ast::TypedefFrame;
+
+
+
+
 use fastobo::ast::Line;
-use fastobo::ast::UnquotedString;
-use fastobo::ast::Xref;
-use fastobo::ast::XrefList;
+
+
+
 use fastobo::ast::RelationIdent;
-use fastobo::ast::PrefixedIdent;
-use fastobo::ast::SubsetIdent;
-use fastobo::ast::InstanceIdent;
-use fastobo::ast::PropertyValue;
-use fastobo::ast::Url;
+
+
+
+
+
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
 use fastobo::visit::VisitMut;
 use fastobo::visit::IdCompactor;
 
-use crate::constants::property::dc;
-use crate::constants::property::iao;
-use crate::constants::property::obo_in_owl;
-use crate::constants::property::rdfs;
+
+
+
+
 use crate::model::Graph;
-use crate::model::Meta;
-use crate::model::Node;
-use crate::model::NodeType;
-use crate::model::BasicPropertyValue;
-use crate::model::DefinitionPropertyValue;
-use crate::model::SynonymPropertyValue;
-use crate::model::XrefPropertyValue;
+
+
+
+
+
+
+
 
 use super::FromGraph;
 use crate::error::Error;
@@ -152,8 +152,8 @@ impl FromGraph<Graph> for OboDoc {
             }
         }
 
-        let mut header = FromGraph::from_graph(*graph.meta)?;
-        let mut entities = entities.into_iter().map(|(_, v)| v).collect();
+        let header = FromGraph::from_graph(*graph.meta)?;
+        let entities = entities.into_iter().map(|(_, v)| v).collect();
 
         let mut doc = OboDoc::with_header(header).and_entities(entities);
         doc.sort();

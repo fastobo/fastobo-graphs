@@ -1,44 +1,44 @@
-use fastobo::ast::HeaderClause;
-use fastobo::ast::HeaderFrame;
-use fastobo::ast::EntityFrame;
-use fastobo::ast::Ident;
-use fastobo::ast::QuotedString;
-use fastobo::ast::Synonym;
-use fastobo::ast::OboDoc;
-use fastobo::ast::SynonymScope;
-use fastobo::ast::TermClause;
-use fastobo::ast::TypedefClause;
-use fastobo::ast::InstanceClause;
-use fastobo::ast::TermFrame;
-use fastobo::ast::IsoDateTime;
-use fastobo::ast::InstanceFrame;
-use fastobo::ast::TypedefFrame;
-use fastobo::ast::Line;
-use fastobo::ast::UnquotedString;
-use fastobo::ast::Xref;
-use fastobo::ast::XrefList;
-use fastobo::ast::RelationIdent;
-use fastobo::ast::PrefixedIdent;
-use fastobo::ast::SubsetIdent;
-use fastobo::ast::InstanceIdent;
-use fastobo::ast::PropertyValue;
-use fastobo::ast::Url;
-use fastobo::semantics::Identified;
-use fastobo::semantics::Orderable;
 
-use crate::constants::property::dc;
-use crate::constants::property::iao;
+use fastobo::ast::HeaderFrame;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 use crate::constants::property::obo_in_owl;
-use crate::constants::property::rdfs;
+
 use crate::error::Result;
-use crate::model::Graph;
+
 use crate::model::Meta;
-use crate::model::Node;
-use crate::model::NodeType;
+
+
 use crate::model::BasicPropertyValue;
-use crate::model::DefinitionPropertyValue;
-use crate::model::SynonymPropertyValue;
-use crate::model::XrefPropertyValue;
+
+
+
 
 use super::Context;
 use super::IntoGraphCtx;
@@ -47,14 +47,14 @@ impl IntoGraphCtx<Meta> for HeaderFrame {
     fn into_graph_ctx(self, ctx: &mut Context) -> Result<Meta> {
         use fastobo::ast::HeaderClause::*;
 
-        let mut definition = None;
+        let definition = None;
         let mut comments = Vec::new();
         let mut subsets = Vec::new();
-        let mut xrefs = Vec::new();
-        let mut synonyms = Vec::new();
+        let xrefs = Vec::new();
+        let synonyms = Vec::new();
         let mut basic_property_values = Vec::new();
         let mut version = None;
-        let mut deprecated = false;
+        let deprecated = false;
 
         for clause in self.into_iter() {
             match clause {

@@ -1,17 +1,17 @@
-use std::mem::replace;
+
 use std::str::FromStr;
 use std::string::ToString;
-use std::collections::HashMap;
+
 
 use fastobo::ast::ClassIdent;
-use fastobo::ast::HeaderFrame;
-use fastobo::ast::HeaderClause;
+
+
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
 use fastobo::ast::Synonym;
-use fastobo::ast::OboDoc;
-use fastobo::ast::SynonymScope;
+
+
 use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
 use fastobo::ast::InstanceClause;
@@ -28,10 +28,10 @@ use fastobo::ast::PrefixedIdent;
 use fastobo::ast::SubsetIdent;
 use fastobo::ast::InstanceIdent;
 use fastobo::ast::PropertyValue;
-use fastobo::ast::Url;
-use fastobo::ast::Eol;
-use fastobo::semantics::Identified;
-use fastobo::semantics::Orderable;
+
+
+
+
 
 use crate::constants::property::dc;
 use crate::constants::property::iao;
@@ -39,14 +39,14 @@ use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
 use crate::error::Result;
 use crate::error::Error;
-use crate::model::Graph;
+
 use crate::model::Meta;
 use crate::model::Node;
 use crate::model::NodeType;
 use crate::model::BasicPropertyValue;
 use crate::model::DefinitionPropertyValue;
-use crate::model::SynonymPropertyValue;
-use crate::model::XrefPropertyValue;
+
+
 use super::FromGraph;
 
 // ---------------------------------------------------------------------------
