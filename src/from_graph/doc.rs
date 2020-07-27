@@ -1,51 +1,28 @@
-
 use std::str::FromStr;
 
 use std::collections::HashMap;
 
 use fastobo::ast::ClassIdent;
 
-
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 
-
 use fastobo::ast::OboDoc;
 
+use fastobo::ast::InstanceClause;
 use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
-use fastobo::ast::InstanceClause;
-
-
-
 
 use fastobo::ast::Line;
 
-
-
 use fastobo::ast::RelationIdent;
-
-
-
-
 
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
-use fastobo::visit::VisitMut;
 use fastobo::visit::IdCompactor;
-
-
-
-
+use fastobo::visit::VisitMut;
 
 use crate::model::Graph;
-
-
-
-
-
-
-
 
 use super::FromGraph;
 use crate::error::Error;
@@ -53,7 +30,6 @@ use crate::error::Result;
 
 impl FromGraph<Graph> for OboDoc {
     fn from_graph(graph: Graph) -> Result<Self> {
-
         let mut entities = HashMap::new();
         for node in graph.nodes.into_iter() {
             if let Some(frame) = <Option<EntityFrame>>::from_graph(node)? {
@@ -77,7 +53,7 @@ impl FromGraph<Graph> for OboDoc {
                     }
                     Some(EntityFrame::Instance(_)) => {
                         return Err(Error::invalid_instance_clause("is_a"));
-                    },
+                    }
                     None => (),
                 }
             } else if &edge.pred == "inverseOf" {
@@ -91,7 +67,7 @@ impl FromGraph<Graph> for OboDoc {
                     }
                     Some(EntityFrame::Instance(_)) => {
                         return Err(Error::invalid_instance_clause("inverse_of"));
-                    },
+                    }
                     None => (),
                 }
             } else {
@@ -131,7 +107,7 @@ impl FromGraph<Graph> for OboDoc {
                     }
                     Some(EntityFrame::Instance(_)) => {
                         return Err(Error::invalid_instance_clause("equivalent_to"));
-                    },
+                    }
                     None => (),
                 }
             }

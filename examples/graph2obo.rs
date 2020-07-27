@@ -8,12 +8,11 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use fastobo::visit::VisitMut;
-use fastobo_graphs::FromGraph;
 use fastobo_graphs::model::GraphDocument;
+use fastobo_graphs::FromGraph;
 
 fn main() {
     for path in std::env::args().skip(1) {
-
         // Open the file
         let srcpath = PathBuf::from(&path);
         let dstpath = srcpath.with_extension("obo");
@@ -35,7 +34,7 @@ fn main() {
                 }
             }
             Some(other) => panic!("unknown file extension: {:?}", other),
-            None => panic!("can't determine input file type from extension")
+            None => panic!("can't determine input file type from extension"),
         };
 
         // Verify only one graph is present: we can't create an OBO document
@@ -46,8 +45,8 @@ fn main() {
 
         // Write the generated document to an OBO file next to the input file.
         let graph = doc.graphs.into_iter().next().unwrap();
-        let mut obodoc = fastobo::ast::OboDoc::from_graph(graph)
-            .expect("could not convert from graph");
+        let mut obodoc =
+            fastobo::ast::OboDoc::from_graph(graph).expect("could not convert from graph");
         fastobo::visit::IdCompactor::new().visit_doc(&mut obodoc);
         File::create(&dstpath)
             .and_then(|mut f| write!(f, "{}", obodoc))

@@ -1,38 +1,20 @@
-
 use std::str::FromStr;
 
-
-
-
-use fastobo::ast::HeaderFrame;
 use fastobo::ast::HeaderClause;
+use fastobo::ast::HeaderFrame;
 use fastobo::ast::NaiveDateTime;
 
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
 
-
-
-
-
-
-
-
-
-
 use fastobo::ast::NamespaceIdent;
 
 use fastobo::ast::UnquotedString;
 
-
-use fastobo::ast::RelationIdent;
 use fastobo::ast::PrefixedIdent;
-
+use fastobo::ast::RelationIdent;
 
 use fastobo::ast::PropertyValue;
-
-
-
 
 use crate::constants::property::dc;
 
@@ -41,14 +23,10 @@ use crate::constants::property::rdfs;
 
 use crate::model::Meta;
 
-
 use crate::model::BasicPropertyValue;
 
-
-
-
-use crate::error::Result;
 use super::FromGraph;
+use crate::error::Result;
 
 impl FromGraph<Meta> for HeaderFrame {
     fn from_graph(meta: Meta) -> Result<Self> {
@@ -90,12 +68,8 @@ impl FromGraph<BasicPropertyValue> for HeaderClause {
             obo_in_owl::NAMESPACE_ID_RULE => {
                 Ok(HeaderClause::NamespaceIdRule(UnquotedString::new(pv.val)))
             }
-            obo_in_owl::SAVED_BY => {
-                Ok(HeaderClause::SavedBy(UnquotedString::new(pv.val)))
-            }
-            rdfs::COMMENT => {
-                Ok(HeaderClause::Remark(UnquotedString::new(pv.val)))
-            }
+            obo_in_owl::SAVED_BY => Ok(HeaderClause::SavedBy(UnquotedString::new(pv.val))),
+            rdfs::COMMENT => Ok(HeaderClause::Remark(UnquotedString::new(pv.val))),
             other => {
                 let rel = RelationIdent::from_str(&other)?;
                 let pv = match Ident::from_str(&pv.val) {
@@ -103,11 +77,11 @@ impl FromGraph<BasicPropertyValue> for HeaderClause {
                     Err(_) => PropertyValue::Literal(
                         rel,
                         QuotedString::new(pv.val),
-                        Ident::from(PrefixedIdent::new("xsd", "string"))
-                    )
+                        Ident::from(PrefixedIdent::new("xsd", "string")),
+                    ),
                 };
                 Ok(HeaderClause::PropertyValue(pv))
-            },
+            }
         }
     }
 }

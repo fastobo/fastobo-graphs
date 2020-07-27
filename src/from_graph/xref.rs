@@ -1,12 +1,12 @@
 use std::str::FromStr;
 
-use fastobo::ast::Xref;
 use fastobo::ast::Ident;
+use fastobo::ast::Xref;
 
-use crate::model::XrefPropertyValue;
+use super::FromGraph;
 use crate::error::Error;
 use crate::error::Result;
-use super::FromGraph;
+use crate::model::XrefPropertyValue;
 
 impl FromGraph<XrefPropertyValue> for Xref {
     fn from_graph(pv: XrefPropertyValue) -> Result<Self> {

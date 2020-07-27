@@ -1,17 +1,15 @@
 use std::collections::HashMap;
 
-
+use fastobo::ast::HeaderClause;
 use fastobo::ast::Ident;
-use fastobo::ast::UnprefixedIdent;
 use fastobo::ast::IdentPrefix;
 use fastobo::ast::OboDoc;
-use fastobo::ast::HeaderClause;
+use fastobo::ast::UnprefixedIdent;
 use fastobo::ast::Url;
 
-
+use super::constants::uri;
 use super::error::Result;
 use super::model::GraphDocument;
-use super::constants::uri;
 
 mod doc;
 mod entity;
@@ -23,7 +21,6 @@ pub struct Context {
     pub ontology_iri: Url,
     pub current_frame: Url,
     pub shorthands: HashMap<UnprefixedIdent, Ident>,
-
     // pub in_annotation: bool,
     // pub class_level: HashSet<Url>,
 }
@@ -33,18 +30,14 @@ impl Context {
     pub fn expand<I: AsRef<Ident>>(&self, id: I) -> String {
         match id.as_ref() {
             Ident::Url(url) => url.to_string(),
-            Ident::Prefixed(prf) => {
-                match self.idspaces.get(prf.prefix()) {
-                    Some(url) => format!("{}{}", url, prf.local()),
-                    None => format!("{}{}_{}", uri::OBO, prf.prefix(), prf.local())
-                }
-            }
-            Ident::Unprefixed(unp) => {
-                match self.shorthands.get(unp) {
-                    Some(id) => self.expand(id),
-                    None => format!("{}#{}", self.ontology_iri, unp),
-                }
-            }
+            Ident::Prefixed(prf) => match self.idspaces.get(prf.prefix()) {
+                Some(url) => format!("{}{}", url, prf.local()),
+                None => format!("{}{}_{}", uri::OBO, prf.prefix(), prf.local()),
+            },
+            Ident::Unprefixed(unp) => match self.shorthands.get(unp) {
+                Some(id) => self.expand(id),
+                None => format!("{}#{}", self.ontology_iri, unp),
+            },
         }
     }
 }
@@ -61,10 +54,7 @@ impl From<&OboDoc> for Context {
             IdentPrefix::new("RO"),
             Url::parse(&format!("{}RO", uri::OBO,)).unwrap(),
         );
-        idspaces.insert(
-            IdentPrefix::new("xsd"),
-            Url::parse(uri::XSD).unwrap(),
-        );
+        idspaces.insert(IdentPrefix::new("xsd"), Url::parse(uri::XSD).unwrap());
 
         // Add the prefixes and ID spaces from the OBO header.
         let mut ontology_iri = Url::parse("http://purl.obolibrary.org/obo/TEMP").unwrap();

@@ -8,9 +8,9 @@ extern crate serde_yaml;
 use std::fs::File;
 use std::path::PathBuf;
 
+use fastobo_graphs::model::GraphDocument;
 use fastobo_graphs::FromGraph;
 use fastobo_graphs::IntoGraph;
-use fastobo_graphs::model::GraphDocument;
 
 macro_rules! test_impl {
     ($($name:ident,)*) => (
@@ -72,7 +72,6 @@ macro_rules! test_impl {
         }
     )
 }
-
 
 test_impl!(
     header_data_version,

@@ -1,43 +1,21 @@
-
 use fastobo::ast::EntityFrame;
-
-
-
-
-
-
-
 
 use fastobo::ast::TermFrame;
 
 use fastobo::ast::InstanceFrame;
 use fastobo::ast::TypedefFrame;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 use crate::constants::property::obo_in_owl;
 
 use crate::error::Result;
+use crate::model::BasicPropertyValue;
+use crate::model::DefinitionPropertyValue;
+use crate::model::DomainRangeAxiom;
 use crate::model::Edge;
 use crate::model::Graph;
 use crate::model::Meta;
 use crate::model::Node;
 use crate::model::NodeType;
-use crate::model::DomainRangeAxiom;
-use crate::model::BasicPropertyValue;
-use crate::model::DefinitionPropertyValue;
 
 use crate::model::XrefPropertyValue;
 
@@ -189,7 +167,7 @@ impl IntoGraphCtx<Graph> for TermFrame {
             id: ctx.expand(self.id().as_inner()),
             meta: None,
             ty: Some(NodeType::Class),
-            label: None
+            label: None,
         };
 
         //

@@ -19,12 +19,13 @@ pub mod parse {
                     .join(stringify!($case));
                 let yamlfile = File::open(basename.with_extension("yaml")).unwrap();
                 let jsonfile = File::open(basename.with_extension("json")).unwrap();
-                let jsongraph: fastobo_graphs::model::GraphDocument = serde_json::from_reader(jsonfile)
-                    .unwrap();
-                let yamlgraph: fastobo_graphs::model::GraphDocument = serde_yaml::from_reader(yamlfile).unwrap();
+                let jsongraph: fastobo_graphs::model::GraphDocument =
+                    serde_json::from_reader(jsonfile).unwrap();
+                let yamlgraph: fastobo_graphs::model::GraphDocument =
+                    serde_yaml::from_reader(yamlfile).unwrap();
                 assert_eq!(jsongraph, yamlgraph, "graphs do not match!")
             }
-        }
+        };
     }
 
     test_impl!(abox);
@@ -51,14 +52,15 @@ pub mod convert {
                     .join(stringify!($case))
                     .with_extension("yaml");
                 let yamlfile = File::open(yaml).unwrap();
-                let yamlgraphs: fastobo_graphs::model::GraphDocument = serde_yaml::from_reader(yamlfile).unwrap();
+                let yamlgraphs: fastobo_graphs::model::GraphDocument =
+                    serde_yaml::from_reader(yamlfile).unwrap();
                 let graph = yamlgraphs.graphs.into_iter().next().unwrap();
 
                 if let Err(e) = fastobo::ast::OboDoc::from_graph(graph) {
                     panic!("could not convert {} to OBO: {}", stringify!($case), e);
                 }
             }
-        }
+        };
     }
 
     test_impl!(abox);

@@ -21,8 +21,6 @@ pub mod serde {
         D: Deserializer<'de>,
         T: Deserialize<'de>,
     {
-        Vec::<Option<T>>::deserialize(deserializer).map(|v|
-            v.into_iter().flatten().collect()
-        )
+        Vec::<Option<T>>::deserialize(deserializer).map(|v| v.into_iter().flatten().collect())
     }
 }

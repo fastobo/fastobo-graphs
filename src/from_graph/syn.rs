@@ -1,16 +1,16 @@
 use std::str::FromStr;
 
+use fastobo::ast::Ident;
+use fastobo::ast::QuotedString;
 use fastobo::ast::Synonym;
 use fastobo::ast::SynonymScope;
-use fastobo::ast::Ident;
 use fastobo::ast::Xref;
 use fastobo::ast::XrefList;
-use fastobo::ast::QuotedString;
 
-use crate::model::SynonymPropertyValue;
+use super::FromGraph;
 use crate::error::Error;
 use crate::error::Result;
-use super::FromGraph;
+use crate::model::SynonymPropertyValue;
 
 impl FromGraph<SynonymPropertyValue> for Synonym {
     fn from_graph(pv: SynonymPropertyValue) -> Result<Self> {
@@ -22,7 +22,8 @@ impl FromGraph<SynonymPropertyValue> for Synonym {
             "hasRelatedSynonym" => SynonymScope::Related,
             other => return Err(Error::InvalidSynonymType(other.to_string())),
         };
-        let xrefs = pv.xrefs
+        let xrefs = pv
+            .xrefs
             .into_iter()
             .map(|id| Ident::from_str(&id).map(Xref::new).map_err(Error::from))
             .collect::<Result<XrefList>>()?;

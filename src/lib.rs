@@ -1,7 +1,7 @@
 #![cfg_attr(feature = "_doc", feature(doc_cfg, external_doc))]
 #![cfg_attr(feature = "_doc", doc(include = "../README.md"))]
 #![warn(clippy::all)]
-#![recursion_limit="128"]
+#![recursion_limit = "128"]
 #![allow(unused_variables, dead_code)]
 
 #[macro_use]
@@ -15,26 +15,26 @@ extern crate serde;
 extern crate serde_json;
 extern crate serde_yaml;
 
-pub mod error;
-pub mod model;
 pub mod constants;
-mod utils;
+pub mod error;
 #[cfg(feature = "obo")]
 mod from_graph;
 #[cfg(feature = "obo")]
 mod into_graph;
+pub mod model;
+mod utils;
 
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
+use self::error::Result;
 #[cfg(feature = "obo")]
 pub use self::from_graph::FromGraph;
 #[cfg(feature = "obo")]
 pub use self::into_graph::IntoGraph;
 use self::model::GraphDocument;
-use self::error::Result;
 
 // ---------------------------------------------------------------------------
 
@@ -75,5 +75,7 @@ pub fn to_writer<W: Write>(w: W, g: &GraphDocument) -> Result<()> {
 /// Write an OBO graph to a file on the local filesystem.
 #[inline]
 pub fn to_file<P: AsRef<Path>>(path: P, g: &GraphDocument) -> Result<()> {
-    File::create(path).map_err(From::from).and_then(|w| to_writer(w, g))
+    File::create(path)
+        .map_err(From::from)
+        .and_then(|w| to_writer(w, g))
 }

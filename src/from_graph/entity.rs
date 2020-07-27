@@ -1,51 +1,42 @@
-
 use std::str::FromStr;
 use std::string::ToString;
 
-
 use fastobo::ast::ClassIdent;
-
 
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
 use fastobo::ast::Synonym;
 
-
-use fastobo::ast::TermClause;
-use fastobo::ast::TypedefClause;
 use fastobo::ast::InstanceClause;
-use fastobo::ast::TermFrame;
-use fastobo::ast::IsoDateTime;
 use fastobo::ast::InstanceFrame;
-use fastobo::ast::TypedefFrame;
+use fastobo::ast::InstanceIdent;
+use fastobo::ast::IsoDateTime;
 use fastobo::ast::Line;
+use fastobo::ast::PrefixedIdent;
+use fastobo::ast::PropertyValue;
+use fastobo::ast::RelationIdent;
+use fastobo::ast::SubsetIdent;
+use fastobo::ast::TermClause;
+use fastobo::ast::TermFrame;
+use fastobo::ast::TypedefClause;
+use fastobo::ast::TypedefFrame;
 use fastobo::ast::UnquotedString;
 use fastobo::ast::Xref;
 use fastobo::ast::XrefList;
-use fastobo::ast::RelationIdent;
-use fastobo::ast::PrefixedIdent;
-use fastobo::ast::SubsetIdent;
-use fastobo::ast::InstanceIdent;
-use fastobo::ast::PropertyValue;
-
-
-
-
 
 use crate::constants::property::dc;
 use crate::constants::property::iao;
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
-use crate::error::Result;
 use crate::error::Error;
+use crate::error::Result;
 
+use crate::model::BasicPropertyValue;
+use crate::model::DefinitionPropertyValue;
 use crate::model::Meta;
 use crate::model::Node;
 use crate::model::NodeType;
-use crate::model::BasicPropertyValue;
-use crate::model::DefinitionPropertyValue;
-
 
 use super::FromGraph;
 
@@ -70,7 +61,7 @@ macro_rules! impl_frame_inner {
             }
             Ok(Some(EntityFrame::Variant(frame)))
         }
-    }}
+    }};
 }
 
 impl FromGraph<Node> for Option<EntityFrame> {
@@ -78,36 +69,32 @@ impl FromGraph<Node> for Option<EntityFrame> {
         let id = Ident::from_str(&node.id)?;
         match node.ty {
             None => Ok(None),
-            Some(NodeType::Class) => {
-                impl_frame_inner!(node, id, ClassIdent, Term)
-            }
-            Some(NodeType::Individual) => {
-                impl_frame_inner!(node, id, InstanceIdent, Instance)
-            }
+            Some(NodeType::Class) => impl_frame_inner!(node, id, ClassIdent, Term),
+            Some(NodeType::Individual) => impl_frame_inner!(node, id, InstanceIdent, Instance),
             Some(NodeType::Property) => {
                 // replace ID with `oboInOwl:shorthand` if possible.
                 match impl_frame_inner!(node, id, RelationIdent, Typedef) {
                     Ok(Some(EntityFrame::Typedef(mut frame))) => {
-                        if let Some((idx, _)) = frame
-                            .iter()
-                            .enumerate()
-                            .find(|(_, c)| match c.as_inner() {
-                                TypedefClause::PropertyValue(PropertyValue::Resource(rid, value)) => {
-                                    match rid.as_ref() {
-                                        Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
-                                        _ => false,
-                                    }
+                        if let Some((idx, _)) =
+                            frame.iter().enumerate().find(|(_, c)| match c.as_inner() {
+                                TypedefClause::PropertyValue(PropertyValue::Resource(
+                                    rid,
+                                    value,
+                                )) => match rid.as_ref() {
+                                    Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
+                                    _ => false,
                                 },
                                 _ => false,
-                            }) {
-                                let new_id = match frame.remove(idx).into_inner() {
-                                    TypedefClause::PropertyValue(PropertyValue::Resource(_, value)) => {
-                                        RelationIdent::from(value)
-                                    },
-                                    _ => unreachable!()
-                                };
-                                *frame.id_mut() = new_id.into();
-                            }
+                            })
+                        {
+                            let new_id = match frame.remove(idx).into_inner() {
+                                TypedefClause::PropertyValue(PropertyValue::Resource(_, value)) => {
+                                    RelationIdent::from(value)
+                                }
+                                _ => unreachable!(),
+                            };
+                            *frame.id_mut() = new_id.into();
+                        }
                         Ok(Some(EntityFrame::Typedef(frame)))
                     }
                     other => other,
@@ -149,7 +136,7 @@ macro_rules! impl_meta {
                 Ok(clauses)
             }
         }
-    }
+    };
 }
 
 impl_meta!(TermClause);
@@ -163,14 +150,15 @@ macro_rules! impl_definition_pv {
         impl FromGraph<DefinitionPropertyValue> for $clause {
             fn from_graph(pv: DefinitionPropertyValue) -> Result<Self> {
                 let value = QuotedString::new(pv.val);
-                let xrefs = pv.xrefs
+                let xrefs = pv
+                    .xrefs
                     .into_iter()
                     .map(|id: String| Ident::from_str(&id).map(Xref::new).map_err(Error::from))
                     .collect::<Result<XrefList>>()?;
                 Ok($clause::Def(value, xrefs))
             }
         }
-    }
+    };
 }
 
 impl_definition_pv!(TermClause);
@@ -228,7 +216,7 @@ impl FromGraph<BasicPropertyValue> for TermClause {
     }
 }
 
-impl FromGraph<BasicPropertyValue>  for TypedefClause {
+impl FromGraph<BasicPropertyValue> for TypedefClause {
     fn from_graph(pv: BasicPropertyValue) -> Result<Self> {
         let s = pv.pred.as_str();
         impl_basic_pv_common!(pv, TypedefClause, s,
@@ -260,7 +248,7 @@ impl FromGraph<BasicPropertyValue>  for TypedefClause {
     }
 }
 
-impl FromGraph<BasicPropertyValue>  for InstanceClause {
+impl FromGraph<BasicPropertyValue> for InstanceClause {
     fn from_graph(pv: BasicPropertyValue) -> Result<Self> {
         let s = pv.pred.as_str();
         impl_basic_pv_common!(pv, InstanceClause, s)
