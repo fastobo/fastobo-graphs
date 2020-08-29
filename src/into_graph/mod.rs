@@ -61,7 +61,7 @@ impl From<&OboDoc> for Context {
         for clause in doc.header() {
             match clause {
                 HeaderClause::Idspace(prefix, url, _) => {
-                    idspaces.insert(prefix.clone(), url.clone());
+                    idspaces.insert(prefix.as_ref().clone(), url.as_ref().clone());
                 }
                 HeaderClause::Ontology(slug) => {
                     ontology_iri = Url::parse(&format!("{}{}.owl", uri::OBO, slug)).unwrap();

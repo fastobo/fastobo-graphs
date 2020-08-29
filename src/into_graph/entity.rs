@@ -55,12 +55,12 @@ macro_rules! impl_frame_common {
                     )
                 );
             }
-            Def(def, xrefs) => {
+            Def(def) => {
                 $meta.definition = Some(Box::new(
                     DefinitionPropertyValue {
                         pred: None,
-                        val: def.into_string(),
-                        xrefs: xrefs.iter().map(|x| $ctx.expand(x.id())).collect(),
+                        val: def.text().as_str().to_string(),
+                        xrefs: def.xrefs().iter().map(|x| $ctx.expand(x.id())).collect(),
                         meta: None
                     }
                 ))
@@ -86,7 +86,7 @@ macro_rules! impl_frame_common {
                     Edge {
                         sub: $current.clone(),
                         pred: String::from("is_a"),
-                        obj: $ctx.expand(id),
+                        obj: $ctx.expand(*id),
                         meta: None,
                     }
                 );
@@ -98,8 +98,8 @@ macro_rules! impl_frame_common {
                 $edges.push(
                     Edge {
                         sub: $current.clone(),
-                        pred: $ctx.expand(rid),
-                        obj: $ctx.expand(cid),
+                        pred: $ctx.expand(*rid),
+                        obj: $ctx.expand(*cid),
                         meta: None,
                     }
                 )
@@ -125,7 +125,7 @@ macro_rules! impl_frame_common {
                 $meta.basic_property_values.push(
                     BasicPropertyValue::new(
                         obo_in_owl::REPLACED_BY.to_string(),
-                        $ctx.expand(cid),
+                        $ctx.expand(*cid),
                     )
                 );
             }
@@ -133,7 +133,7 @@ macro_rules! impl_frame_common {
                 $meta.basic_property_values.push(
                     BasicPropertyValue::new(
                         obo_in_owl::CONSIDER.to_string(),
-                        $ctx.expand(cid),
+                        $ctx.expand(*cid),
                     )
                 );
             }
@@ -225,7 +225,7 @@ impl IntoGraphCtx<Graph> for TypedefFrame {
                             all_values_from_edges: Vec::new(),
                         });
                     }
-                    dra[0].domain_class_ids.push(ctx.expand(id));
+                    dra[0].domain_class_ids.push(ctx.expand(*id));
                 },
                 Range(id) => {
                     if dra.is_empty() {
@@ -237,7 +237,7 @@ impl IntoGraphCtx<Graph> for TypedefFrame {
                             all_values_from_edges: Vec::new(),
                         });
                     }
-                    dra[0].range_class_ids.push(ctx.expand(id));
+                    dra[0].range_class_ids.push(ctx.expand(*id));
                 },
                 HoldsOverChain(r1, r2) => {},
                 IsAntiSymmetric(b) => {},
@@ -263,7 +263,7 @@ impl IntoGraphCtx<Graph> for TypedefFrame {
                     meta.basic_property_values.push(
                         BasicPropertyValue::new(
                             obo_in_owl::DISJOINT_OVER.to_string(),
-                            ctx.expand(r),
+                            ctx.expand(*r),
                         )
                     );
                 },

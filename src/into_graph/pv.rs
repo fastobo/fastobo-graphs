@@ -9,12 +9,12 @@ use super::IntoGraphCtx;
 impl IntoGraphCtx<BasicPropertyValue> for PropertyValue {
     fn into_graph_ctx(self, ctx: &mut Context) -> Result<BasicPropertyValue> {
         match self {
-            PropertyValue::Resource(rel, id) => {
-                Ok(BasicPropertyValue::new(ctx.expand(rel), ctx.expand(id)))
+            PropertyValue::Resource(pv) => {
+                Ok(BasicPropertyValue::new(ctx.expand(pv.property()), ctx.expand(pv.target())))
             }
-            PropertyValue::Literal(rel, value, ty) => Ok(BasicPropertyValue::new(
-                ctx.expand(rel),
-                value.into_string(),
+            PropertyValue::Literal(pv) => Ok(BasicPropertyValue::new(
+                ctx.expand(pv.property()),
+                pv.literal().as_str().to_string(),
             )),
         }
     }

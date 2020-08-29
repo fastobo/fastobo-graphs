@@ -2,20 +2,21 @@ use std::str::FromStr;
 use std::string::ToString;
 
 use fastobo::ast::ClassIdent;
-
+use fastobo::ast::Definition;
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
 use fastobo::ast::Synonym;
-
 use fastobo::ast::InstanceClause;
 use fastobo::ast::InstanceFrame;
 use fastobo::ast::InstanceIdent;
 use fastobo::ast::IsoDateTime;
 use fastobo::ast::Line;
+use fastobo::ast::LiteralPropertyValue;
 use fastobo::ast::PrefixedIdent;
 use fastobo::ast::PropertyValue;
 use fastobo::ast::RelationIdent;
+use fastobo::ast::ResourcePropertyValue;
 use fastobo::ast::SubsetIdent;
 use fastobo::ast::TermClause;
 use fastobo::ast::TermFrame;
@@ -52,14 +53,14 @@ macro_rules! impl_frame_inner {
         m! {
             let mut frame = Frame::new(Line::from($ident::from($id)));
             if let Some(label) = $node.label {
-                let name = Clause::Name(UnquotedString::new(label));
+                let name = Clause::Name(Box::new(UnquotedString::new(label)));
                 frame.push(Line::from(name));
             }
             if let Some(meta) = $node.meta {
                 let clauses: Vec<Clause> = FromGraph::from_graph(*meta)?;
                 frame.extend(clauses.into_iter().map(Line::from));
             }
-            Ok(Some(EntityFrame::Variant(frame)))
+            Ok(Some(EntityFrame::Variant(Box::new(frame))))
         }
     }};
 }
@@ -76,20 +77,31 @@ impl FromGraph<Node> for Option<EntityFrame> {
                 match impl_frame_inner!(node, id, RelationIdent, Typedef) {
                     Ok(Some(EntityFrame::Typedef(mut frame))) => {
                         if let Some((idx, _)) =
-                            frame.iter().enumerate().find(|(_, c)| match c.as_inner() {
-                                TypedefClause::PropertyValue(PropertyValue::Resource(
-                                    rid,
-                                    value,
-                                )) => match rid.as_ref() {
-                                    Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
-                                    _ => false,
-                                },
-                                _ => false,
-                            })
-                        {
+                            frame
+                                .iter()
+                                .enumerate()
+                                .find(|(_, c)|
+                                    if let TypedefClause::PropertyValue(pv) = c.as_inner() {
+                                        if let PropertyValue::Literal(lpv) = pv.as_ref() {
+                                            match lpv.property().as_ref() {
+                                                Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
+                                                _ => false,
+                                            }
+                                        } else {
+                                            false
+                                        }
+                                    } else {
+                                        false
+                                    }
+                                ) {
                             let new_id = match frame.remove(idx).into_inner() {
-                                TypedefClause::PropertyValue(PropertyValue::Resource(_, value)) => {
-                                    RelationIdent::from(value)
+                                TypedefClause::PropertyValue(pv) => {
+                                    match *pv {
+                                        PropertyValue::Resource(rpv) => {
+                                            RelationIdent::from(rpv.target().clone())
+                                        },
+                                        _ => unreachable!()
+                                    }
                                 }
                                 _ => unreachable!(),
                             };
@@ -115,17 +127,17 @@ macro_rules! impl_meta {
                     clauses.push($clause::from_graph(*desc)?)
                 }
                 for comment in meta.comments {
-                    clauses.push($clause::Comment(UnquotedString::new(comment)));
+                    clauses.push($clause::Comment(Box::new(UnquotedString::new(comment))));
                 }
                 for subset in meta.subsets {
                     let id = SubsetIdent::from_str(&subset)?;
-                    clauses.push($clause::Subset(id));
+                    clauses.push($clause::Subset(Box::new(id)));
                 }
                 for xref in meta.xrefs {
-                    clauses.push($clause::Xref(Xref::from_graph(xref)?));
+                    clauses.push($clause::Xref(Box::new(Xref::from_graph(xref)?)));
                 }
                 for synonym in meta.synonyms {
-                    clauses.push($clause::Synonym(Synonym::from_graph(synonym)?));
+                    clauses.push($clause::Synonym(Box::new(Synonym::from_graph(synonym)?)));
                 }
                 for pv in meta.basic_property_values {
                     clauses.push($clause::from_graph(pv)?);
@@ -155,7 +167,7 @@ macro_rules! impl_definition_pv {
                     .into_iter()
                     .map(|id: String| Ident::from_str(&id).map(Xref::new).map_err(Error::from))
                     .collect::<Result<XrefList>>()?;
-                Ok($clause::Def(value, xrefs))
+                Ok($clause::Def(Box::new(Definition::with_xrefs(value, xrefs))))
             }
         }
     };
@@ -171,39 +183,39 @@ macro_rules! impl_basic_pv_common {
     ($pv:ident, $clause:ident, $x:ident $(, $l:pat => $r:expr )* ) => {{
         match $x {
             rdfs::COMMENT => {
-                Ok($clause::Comment(UnquotedString::new($pv.val)))
+                Ok($clause::Comment(Box::new(UnquotedString::new($pv.val))))
             },
             obo_in_owl::HAS_ALTERNATIVE_ID => {
                 let id = Ident::from_str(&$pv.val)?;
-                Ok($clause::AltId(id.into()))
+                Ok($clause::AltId(Box::new(id.into())))
             },
             obo_in_owl::HAS_OBO_NAMESPACE => {
                 let id = Ident::from_str(&$pv.val)?;
-                Ok($clause::Namespace(id.into()))
+                Ok($clause::Namespace(Box::new(id.into())))
             },
             obo_in_owl::CREATED_BY | dc::CREATOR => {
-                Ok($clause::CreatedBy(UnquotedString::new($pv.val)))
+                Ok($clause::CreatedBy(Box::new(UnquotedString::new($pv.val))))
             }
             obo_in_owl::CREATION_DATE | dc::DATE => {
                 let dt = IsoDateTime::from_str(&$pv.val)?;
-                Ok($clause::CreationDate(dt))
+                Ok($clause::CreationDate(Box::new(dt)))
             }
             iao::REPLACED_BY => {
                 let id = Ident::from_str(&$pv.val)?;
-                Ok($clause::ReplacedBy(id.into()))
+                Ok($clause::ReplacedBy(Box::new(id.into())))
             }
             $( $l => $r ),*
             other => {
                 let rel = RelationIdent::from_str(&other)?;
                 let pv = match Ident::from_str(&$pv.val) {
-                    Ok(id) => PropertyValue::Resource(rel, id),
-                    Err(_) => PropertyValue::Literal(
+                    Ok(id) => PropertyValue::from(ResourcePropertyValue::new(rel, id)),
+                    Err(_) => PropertyValue::from(LiteralPropertyValue::new(
                         rel,
                         QuotedString::new($pv.val),
                         Ident::from(PrefixedIdent::new("xsd", "string"))
-                    )
+                    ))
                 };
-                Ok($clause::PropertyValue(pv))
+                Ok($clause::PropertyValue(Box::new(pv)))
             },
         }
     }};
