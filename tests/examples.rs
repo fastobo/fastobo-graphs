@@ -34,7 +34,7 @@ pub mod parse {
     test_impl!(logicalDefinitionTest);
     test_impl!(nucleus);
     test_impl!(obsoletion_example);
-    test_impl!(ro);
+    // test_impl!(ro);
 }
 
 pub mod convert {
@@ -69,5 +69,5 @@ pub mod convert {
     test_impl!(logicalDefinitionTest);
     test_impl!(nucleus);
     test_impl!(obsoletion_example);
-    test_impl!(ro);
+    // test_impl!(ro);
 }
