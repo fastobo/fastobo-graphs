@@ -5,7 +5,7 @@
 #![allow(unused_variables, dead_code)]
 
 #[macro_use]
-extern crate err_derive;
+extern crate thiserror;
 #[cfg(feature = "obo")]
 #[macro_use]
 extern crate mashup;

@@ -3,21 +3,21 @@
 /// The error type for this crate.
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error(display = "{}", 0)]
-    YamlError(#[error(cause)] serde_yaml::Error),
-    #[error(display = "{}", 0)]
-    JsonError(#[error(cause)] serde_json::Error),
-    #[error(display = "{}", 0)]
-    IOError(#[error(cause)] std::io::Error),
-    #[error(display = "{}", 0)]
-    OboSyntaxError(#[error(cause)] fastobo::error::SyntaxError),
-    #[error(display = "{}: {:?}", 0, 1)]
-    InvalidBoolean(#[error(cause)] std::str::ParseBoolError, String),
-    #[error(display = "invalid synonym type: {:?}", 0)]
+    #[error(transparent)]
+    YamlError(#[from] serde_yaml::Error),
+    #[error(transparent)]
+    JsonError(#[from] serde_json::Error),
+    #[error(transparent)]
+    IOError(#[from] std::io::Error),
+    #[error(transparent)]
+    OboSyntaxError(#[from] fastobo::error::SyntaxError),
+    #[error("{0}: {1:?}")]
+    InvalidBoolean(#[source] std::str::ParseBoolError, String),
+    #[error("invalid synonym type: {0:?}")]
     InvalidSynonymType(String),
-    #[error(display = "invalid term clause: {:?}", 0)]
+    #[error("invalid term clause: {0:?}")]
     InvalidTermClause(String),
-    #[error(display = "invalid instance clause: {:?}", 0)]
+    #[error("invalid instance clause: {0:?}")]
     InvalidInstanceClause(String),
 }
 
