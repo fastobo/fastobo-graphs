@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.2...HEAD
+
+## [v0.4.2] - 2020-11-17
+[v0.4.2]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.1...v0.4.2
+### Changed
+- Bumped `fastobo` to `v0.12.0`.
+- Replaced `err-derive` dependency with `thiserror` crate.
 
 ## [v0.4.1] - 2020-08-30
 [v0.4.1]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.0...v0.4.1
