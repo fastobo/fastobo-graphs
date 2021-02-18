@@ -12,8 +12,6 @@ keywords = ["obo", "graphs", "ontology", "serde", "parser"]
 categories = ["science", "parser-implementations"]
 exclude = ["obographs"]
 
-[badges.travis-ci]
-repository = "fastobo/fastobo-graphs"
 [badges.codecov]
 repository = "fastobo/fastobo-graphs"
 service    = "github"
