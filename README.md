@@ -54,9 +54,8 @@ extern crate ureq;
 
 fn main() {
     let response = ureq::get("http://purl.obolibrary.org/obo/zeco.json").call();
-    let doc = ;
 
-    match fastobo_graphs::from_reader(response.into_reader()) {
+    match fastobo_graphs::from_reader(response.unwrap().into_reader()) {
         Ok(doc) => println!("Number of ZECO nodes: {}", doc.graphs[0].nodes.len()),
         Err(e) => panic!("Could not parse ZECO OBO Graph: {}", e),
     }
