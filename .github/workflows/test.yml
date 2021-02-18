@@ -15,7 +15,9 @@ jobs:
           - nightly
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Setup Rust ${{ matrix.rust-toolchain }}
       uses: actions-rs/toolchain@v1
       with:
