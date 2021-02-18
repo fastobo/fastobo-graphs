@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [Unreleased]
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.3...HEAD
 
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.2...HEAD
+## [v0.4.3] - 2021-02-18
+[v0.4.3]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.2...v0.4.3
+### Changed
+- Bumped `fastobo` to `v0.13.0`.
+- Replaced Travis-CI with GitHub Actions for CI/CD.	
 
 ## [v0.4.2] - 2020-11-17
 [v0.4.2]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.1...v0.4.2
