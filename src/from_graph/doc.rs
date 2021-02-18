@@ -73,15 +73,24 @@ impl FromGraph<Graph> for OboDoc {
             } else {
                 match entities.get_mut(&id_sub) {
                     Some(EntityFrame::Term(ref mut frame)) => {
-                        let c = TermClause::Relationship(Box::new(id_pred), Box::new(From::from(id_obj)));
+                        let c = TermClause::Relationship(
+                            Box::new(id_pred),
+                            Box::new(From::from(id_obj)),
+                        );
                         frame.push(Line::from(c));
                     }
                     Some(EntityFrame::Typedef(ref mut frame)) => {
-                        let c = TypedefClause::Relationship(Box::new(id_pred), Box::new(From::from(id_obj)));
+                        let c = TypedefClause::Relationship(
+                            Box::new(id_pred),
+                            Box::new(From::from(id_obj)),
+                        );
                         frame.push(Line::from(c));
                     }
                     Some(EntityFrame::Instance(ref mut frame)) => {
-                        let c = InstanceClause::Relationship(Box::new(id_pred), Box::new(From::from(id_obj)));
+                        let c = InstanceClause::Relationship(
+                            Box::new(id_pred),
+                            Box::new(From::from(id_obj)),
+                        );
                         frame.push(Line::from(c));
                     }
                     None => (),

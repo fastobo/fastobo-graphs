@@ -5,8 +5,6 @@ use fastobo::ast::ClassIdent;
 use fastobo::ast::Definition;
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
-use fastobo::ast::QuotedString;
-use fastobo::ast::Synonym;
 use fastobo::ast::InstanceClause;
 use fastobo::ast::InstanceFrame;
 use fastobo::ast::InstanceIdent;
@@ -15,9 +13,11 @@ use fastobo::ast::Line;
 use fastobo::ast::LiteralPropertyValue;
 use fastobo::ast::PrefixedIdent;
 use fastobo::ast::PropertyValue;
+use fastobo::ast::QuotedString;
 use fastobo::ast::RelationIdent;
 use fastobo::ast::ResourcePropertyValue;
 use fastobo::ast::SubsetIdent;
+use fastobo::ast::Synonym;
 use fastobo::ast::TermClause;
 use fastobo::ast::TermFrame;
 use fastobo::ast::TypedefClause;
@@ -76,33 +76,27 @@ impl FromGraph<Node> for Option<EntityFrame> {
                 // replace ID with `oboInOwl:shorthand` if possible.
                 match impl_frame_inner!(node, id, RelationIdent, Typedef) {
                     Ok(Some(EntityFrame::Typedef(mut frame))) => {
-                        if let Some((idx, _)) =
-                            frame
-                                .iter()
-                                .enumerate()
-                                .find(|(_, c)|
-                                    if let TypedefClause::PropertyValue(pv) = c.as_inner() {
-                                        if let PropertyValue::Literal(lpv) = pv.as_ref() {
-                                            match lpv.property().as_ref() {
-                                                Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
-                                                _ => false,
-                                            }
-                                        } else {
-                                            false
-                                        }
-                                    } else {
-                                        false
+                        if let Some((idx, _)) = frame.iter().enumerate().find(|(_, c)| {
+                            if let TypedefClause::PropertyValue(pv) = c.as_inner() {
+                                if let PropertyValue::Literal(lpv) = pv.as_ref() {
+                                    match lpv.property().as_ref() {
+                                        Ident::Url(url) => url.as_str() == obo_in_owl::SHORTHAND,
+                                        _ => false,
                                     }
-                                ) {
-                            let new_id = match frame.remove(idx).into_inner() {
-                                TypedefClause::PropertyValue(pv) => {
-                                    match *pv {
-                                        PropertyValue::Resource(rpv) => {
-                                            RelationIdent::from(rpv.target().clone())
-                                        },
-                                        _ => unreachable!()
-                                    }
+                                } else {
+                                    false
                                 }
+                            } else {
+                                false
+                            }
+                        }) {
+                            let new_id = match frame.remove(idx).into_inner() {
+                                TypedefClause::PropertyValue(pv) => match *pv {
+                                    PropertyValue::Resource(rpv) => {
+                                        RelationIdent::from(rpv.target().clone())
+                                    }
+                                    _ => unreachable!(),
+                                },
                                 _ => unreachable!(),
                             };
                             *frame.id_mut() = new_id.into();
