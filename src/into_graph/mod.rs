@@ -48,23 +48,23 @@ impl From<&OboDoc> for Context {
         let mut idspaces = HashMap::new();
         idspaces.insert(
             IdentPrefix::new("BFO"),
-            Url::parse(&format!("{}BFO_", uri::OBO,)).unwrap(),
+            Url::new(format!("{}BFO_", uri::OBO,)).unwrap(),
         );
         idspaces.insert(
             IdentPrefix::new("RO"),
-            Url::parse(&format!("{}RO", uri::OBO,)).unwrap(),
+            Url::new(format!("{}RO", uri::OBO,)).unwrap(),
         );
-        idspaces.insert(IdentPrefix::new("xsd"), Url::parse(uri::XSD).unwrap());
+        idspaces.insert(IdentPrefix::new("xsd"), Url::new(uri::XSD).unwrap());
 
         // Add the prefixes and ID spaces from the OBO header.
-        let mut ontology_iri = Url::parse("http://purl.obolibrary.org/obo/TEMP").unwrap();
+        let mut ontology_iri = Url::new("http://purl.obolibrary.org/obo/TEMP").unwrap();
         for clause in doc.header() {
             match clause {
                 HeaderClause::Idspace(prefix, url, _) => {
                     idspaces.insert(prefix.as_ref().clone(), url.as_ref().clone());
                 }
                 HeaderClause::Ontology(slug) => {
-                    ontology_iri = Url::parse(&format!("{}{}.owl", uri::OBO, slug)).unwrap();
+                    ontology_iri = Url::new(format!("{}{}.owl", uri::OBO, slug)).unwrap();
                 }
                 _ => (),
             }
