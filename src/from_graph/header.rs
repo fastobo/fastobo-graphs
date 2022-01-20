@@ -2,30 +2,32 @@ use std::str::FromStr;
 
 use fastobo::ast::HeaderClause;
 use fastobo::ast::HeaderFrame;
-use fastobo::ast::NaiveDateTime;
 use fastobo::ast::Ident;
-use fastobo::ast::QuotedString;
-use fastobo::ast::NamespaceIdent;
-use fastobo::ast::UnquotedString;
-use fastobo::ast::PrefixedIdent;
-use fastobo::ast::RelationIdent;
 use fastobo::ast::LiteralPropertyValue;
+use fastobo::ast::NaiveDateTime;
+use fastobo::ast::NamespaceIdent;
+use fastobo::ast::PrefixedIdent;
 use fastobo::ast::PropertyValue;
+use fastobo::ast::QuotedString;
+use fastobo::ast::RelationIdent;
 use fastobo::ast::ResourcePropertyValue;
+use fastobo::ast::UnquotedString;
 
+use super::FromGraph;
 use crate::constants::property::dc;
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
-use crate::model::Meta;
-use crate::model::BasicPropertyValue;
-use super::FromGraph;
 use crate::error::Result;
+use crate::model::BasicPropertyValue;
+use crate::model::Meta;
 
 impl FromGraph<Meta> for HeaderFrame {
     fn from_graph(meta: Meta) -> Result<Self> {
         let mut frame = Self::new();
 
         if let Some(ref def) = meta.definition {}
+
+        if let Some(ref iri) = meta.version {}
 
         // QUESTION: is this semantically correct?
         for comment in meta.comments {

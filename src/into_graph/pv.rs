@@ -1,9 +1,9 @@
 use fastobo::ast::PropertyValue;
 
-use crate::error::Result;
-use crate::model::BasicPropertyValue;
 use super::Context;
 use super::IntoGraphCtx;
+use crate::error::Result;
+use crate::model::BasicPropertyValue;
 
 impl IntoGraphCtx<BasicPropertyValue> for PropertyValue {
     fn into_graph_ctx(self, ctx: &mut Context) -> Result<BasicPropertyValue> {

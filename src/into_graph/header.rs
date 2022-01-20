@@ -1,11 +1,11 @@
 use fastobo::ast::HeaderFrame;
 
-use crate::constants::property::obo_in_owl;
-use crate::error::Result;
-use crate::model::Meta;
-use crate::model::BasicPropertyValue;
 use super::Context;
 use super::IntoGraphCtx;
+use crate::constants::property::obo_in_owl;
+use crate::error::Result;
+use crate::model::BasicPropertyValue;
+use crate::model::Meta;
 
 impl IntoGraphCtx<Meta> for HeaderFrame {
     fn into_graph_ctx(self, ctx: &mut Context) -> Result<Meta> {
@@ -20,6 +20,12 @@ impl IntoGraphCtx<Meta> for HeaderFrame {
         let mut version = None;
         let deprecated = false;
 
+        // extract the ontology identifier
+        let id = self.iter().find_map(|clause| match clause {
+            Ontology(id) => Some(id.clone()),
+            _ => None,
+        });
+
         for clause in self.into_iter() {
             match clause {
                 FormatVersion(v) => {
@@ -29,8 +35,18 @@ impl IntoGraphCtx<Meta> for HeaderFrame {
                     ));
                 }
                 DataVersion(v) => {
-                    // FIXME: use OBO URL instead of OBO short name ?
-                    version = Some(v.into_string());
+                    if let Some(ref ont) = id {
+                        version = Some(format!(
+                            "{}{}/{}/{}.owl",
+                            crate::constants::uri::OBO,
+                            ont.as_str(),
+                            v.as_str(),
+                            ont.as_str()
+                        ));
+                    } else {
+                        // FIXME: should this be an error instead
+                        version = Some(v.into_string());
+                    }
                 }
                 Date(dt) => {
                     basic_property_values.push(BasicPropertyValue::new(

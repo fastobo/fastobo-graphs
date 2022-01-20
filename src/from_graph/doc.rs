@@ -142,7 +142,8 @@ impl FromGraph<Graph> for OboDoc {
                 .as_ref()
                 .and_then(|url| url.strip_prefix(crate::constants::uri::OBO))
             {
-                let version = v.trim_start_matches(id)
+                let version = v
+                    .trim_start_matches(id)
                     .trim_end_matches(".owl")
                     .trim_end_matches(".obo")
                     .trim_end_matches(id)
