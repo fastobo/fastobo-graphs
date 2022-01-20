@@ -2,6 +2,8 @@ use std::str::FromStr;
 use std::collections::HashMap;
 
 use fastobo::ast::ClassIdent;
+use fastobo::ast::HeaderClause;
+use fastobo::ast::HeaderFrame;
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
 use fastobo::ast::OboDoc;
@@ -9,6 +11,7 @@ use fastobo::ast::InstanceClause;
 use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
 use fastobo::ast::Line;
+use fastobo::ast::RelationIdent;
 
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
@@ -129,10 +132,14 @@ impl FromGraph<Graph> for OboDoc {
             }
         }
 
-        let header = FromGraph::from_graph(*graph.meta)?;
-        let entities = entities.into_iter().map(|(_, v)| v).collect();
+        let mut header = HeaderFrame::from_graph(*graph.meta)?;
+        if let Some(ont) = graph.id.strip_prefix(crate::constants::uri::OBO) {
+            let id = ont.trim_end_matches(".obo").trim_end_matches(".owl");
+            header.push(HeaderClause::Ontology(Box::new(id.into())));
+        }
 
-        let mut doc = OboDoc::with_header(header).and_entities(entities);
+        let mut doc = OboDoc::with_header(header)
+            .and_entities(entities.into_iter().map(|(_, v)| v).collect());
         doc.sort();
         IdCompactor::new().visit_doc(&mut doc);
 

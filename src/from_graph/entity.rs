@@ -9,7 +9,6 @@ use fastobo::ast::Ident;
 use fastobo::ast::InstanceClause;
 use fastobo::ast::InstanceFrame;
 use fastobo::ast::InstanceIdent;
-use fastobo::ast::IsoDateTime;
 use fastobo::ast::Line;
 use fastobo::ast::LiteralPropertyValue;
 use fastobo::ast::PrefixedIdent;
