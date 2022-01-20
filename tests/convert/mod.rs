@@ -82,5 +82,5 @@ test_impl!(
     header_remark,
     header_saved_by,
     header_subsetdef,
-    header_synonymtypdef,
+    header_synonymtypedef,
 );

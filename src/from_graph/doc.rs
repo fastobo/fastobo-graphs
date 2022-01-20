@@ -1,27 +1,27 @@
-use std::str::FromStr;
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use fastobo::ast::ClassIdent;
+use fastobo::ast::EntityFrame;
 use fastobo::ast::HeaderClause;
 use fastobo::ast::HeaderFrame;
-use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
-use fastobo::ast::OboDoc;
 use fastobo::ast::InstanceClause;
+use fastobo::ast::Line;
+use fastobo::ast::OboDoc;
+use fastobo::ast::RelationIdent;
 use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
-use fastobo::ast::Line;
-use fastobo::ast::RelationIdent;
 
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
 use fastobo::visit::IdCompactor;
 use fastobo::visit::VisitMut;
 
-use crate::model::Graph;
 use super::FromGraph;
 use crate::error::Error;
 use crate::error::Result;
+use crate::model::Graph;
 
 impl FromGraph<Graph> for OboDoc {
     fn from_graph(graph: Graph) -> Result<Self> {
@@ -132,12 +132,26 @@ impl FromGraph<Graph> for OboDoc {
             }
         }
 
+        // extract header
+        let version_iri = graph.meta.version.clone();
         let mut header = HeaderFrame::from_graph(*graph.meta)?;
         if let Some(ont) = graph.id.strip_prefix(crate::constants::uri::OBO) {
             let id = ont.trim_end_matches(".obo").trim_end_matches(".owl");
             header.push(HeaderClause::Ontology(Box::new(id.into())));
+            if let Some(ref v) = version_iri
+                .as_ref()
+                .and_then(|url| url.strip_prefix(crate::constants::uri::OBO))
+            {
+                let version = v.trim_start_matches(id)
+                    .trim_end_matches(".owl")
+                    .trim_end_matches(".obo")
+                    .trim_end_matches(id)
+                    .trim_matches('/');
+                header.push(HeaderClause::DataVersion(Box::new(version.into())))
+            }
         }
 
+        // collect entities and merge them into a document
         let mut doc = OboDoc::with_header(header)
             .and_entities(entities.into_iter().map(|(_, v)| v).collect());
         doc.sort();
