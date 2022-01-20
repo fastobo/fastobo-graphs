@@ -5,7 +5,27 @@ on:
   - pull_request
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Setup Rust stable
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: rustfmt
+    - name: Check code format
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
   test:
+    name: Test (${{ matrix.rust-toolchain }})
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -13,9 +33,14 @@ jobs:
           - stable
           - beta
           - nightly
+        feature:
+          - default
+          - memchr
+          - threading
+          - smartstring
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v1
       with:
         submodules: true
     - name: Setup Rust ${{ matrix.rust-toolchain }}
@@ -28,32 +53,75 @@ jobs:
       uses: actions/cache@v2
       with:
         path: target
-        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}
+        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}-${{ matrix.feature }}
+    - name: Test with ${{ matrix.feature }} feature
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: '--lib --test canonicalize --test roundtrip --no-default-features --features=${{ matrix.feature }}'
+  cover:
+    name: Coverage (${{ matrix.feature }})
+    runs-on: ubuntu-latest
+    needs: test
+    if: "!startsWith(github.ref, 'refs/tags/v')"
+    strategy:
+      matrix:
+        feature:
+          - default
+          - memchr
+          - threading
+          - smartstring
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Setup Rust stable
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    - name: Setup cache for cargo
+      uses: actions/cache@v2
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}-${{ matrix.feature }}
     - name: Measure code coverage with ${{ matrix.feature }} feature
       uses: actions-rs/tarpaulin@v0.1
       with:
         version: '0.16.0'
-        args: '-v --out Xml --ciserver github-actions'
+        args: '-v --out Xml --ciserver github-actions --lib --test canonicalize --test roundtrip --no-default-features --features=${{ matrix.feature }}'
     - name: Upload coverage statistics
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        flags: rust-${{ matrix.rust-toolchain }},${{ matrix.feature }}
-
-  lint:
+      uses: codecov/codecov-action@v2
+  publish:
+    needs: test
     runs-on: ubuntu-latest
+    environment: Crates.io
+    if: "startsWith(github.ref, 'refs/tags/v')"
+    name: Publish Rust crate
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Setup Rust stable
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt
-      - name: Check code format
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Setup Rust ${{ matrix.rust-toolchain }}
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    - name: Package and publish declaration crate
+      uses: actions-rs/cargo@v1
+      with:
+        command: publish
+        args: '--token ${{ secrets.CRATES_IO_TOKEN }}'
+  release:
+    environment: GitHub Releases
+    runs-on: ubuntu-latest
+    if: "startsWith(github.ref, 'refs/tags/v')"
+    name: Release
+    needs: publish
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Release a Changelog
+      uses: rasmus-saks/release-a-changelog-action@v1.0.1
+      with:
+        github-token: '${{ secrets.GITHUB_TOKEN }}'
