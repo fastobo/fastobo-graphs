@@ -33,11 +33,6 @@ jobs:
           - stable
           - beta
           - nightly
-        feature:
-          - default
-          - memchr
-          - threading
-          - smartstring
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
@@ -53,24 +48,16 @@ jobs:
       uses: actions/cache@v2
       with:
         path: target
-        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}-${{ matrix.feature }}
+        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}
     - name: Test with ${{ matrix.feature }} feature
       uses: actions-rs/cargo@v1
       with:
         command: test
-        args: '--lib --test canonicalize --test roundtrip --no-default-features --features=${{ matrix.feature }}'
   cover:
-    name: Coverage (${{ matrix.feature }})
+    name: Coverage
     runs-on: ubuntu-latest
     needs: test
     if: "!startsWith(github.ref, 'refs/tags/v')"
-    strategy:
-      matrix:
-        feature:
-          - default
-          - memchr
-          - threading
-          - smartstring
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
@@ -84,12 +71,12 @@ jobs:
       uses: actions/cache@v2
       with:
         path: target
-        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}-${{ matrix.feature }}
-    - name: Measure code coverage with ${{ matrix.feature }} feature
+        key: ${{ runner.os }}-cargo-${{ matrix.rust-toolchain }}
+    - name: Measure code coverage
       uses: actions-rs/tarpaulin@v0.1
       with:
         version: '0.16.0'
-        args: '-v --out Xml --ciserver github-actions --lib --test canonicalize --test roundtrip --no-default-features --features=${{ matrix.feature }}'
+        args: '-v --out Xml --ciserver github-actions'
     - name: Upload coverage statistics
       uses: codecov/codecov-action@v2
   publish:
