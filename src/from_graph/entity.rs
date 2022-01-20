@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::string::ToString;
 
 use fastobo::ast::ClassIdent;
+use fastobo::ast::CreationDate;
 use fastobo::ast::Definition;
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
@@ -191,8 +192,8 @@ macro_rules! impl_basic_pv_common {
                 Ok($clause::CreatedBy(Box::new(UnquotedString::new($pv.val))))
             }
             obo_in_owl::CREATION_DATE | dc::DATE => {
-                let dt = IsoDateTime::from_str(&$pv.val)?;
-                Ok($clause::CreationDate(Box::new(dt)))
+                let date = CreationDate::from_str(&$pv.val)?;
+                Ok($clause::CreationDate(Box::new(date)))
             }
             iao::REPLACED_BY => {
                 let id = Ident::from_str(&$pv.val)?;

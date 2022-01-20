@@ -3,30 +3,21 @@ use std::str::FromStr;
 use fastobo::ast::HeaderClause;
 use fastobo::ast::HeaderFrame;
 use fastobo::ast::NaiveDateTime;
-
 use fastobo::ast::Ident;
 use fastobo::ast::QuotedString;
-
 use fastobo::ast::NamespaceIdent;
-
 use fastobo::ast::UnquotedString;
-
 use fastobo::ast::PrefixedIdent;
 use fastobo::ast::RelationIdent;
-
 use fastobo::ast::LiteralPropertyValue;
 use fastobo::ast::PropertyValue;
 use fastobo::ast::ResourcePropertyValue;
 
 use crate::constants::property::dc;
-
 use crate::constants::property::obo_in_owl;
 use crate::constants::property::rdfs;
-
 use crate::model::Meta;
-
 use crate::model::BasicPropertyValue;
-
 use super::FromGraph;
 use crate::error::Result;
 

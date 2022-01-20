@@ -2,7 +2,6 @@ use fastobo::ast::PropertyValue;
 
 use crate::error::Result;
 use crate::model::BasicPropertyValue;
-
 use super::Context;
 use super::IntoGraphCtx;
 

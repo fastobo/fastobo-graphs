@@ -1,13 +1,11 @@
 use std::mem::replace;
 
 use fastobo::ast::OboDoc;
-
 use fastobo::ast::HeaderFrame;
 
 use crate::error::Result;
 use crate::model::Graph;
 use crate::model::GraphDocument;
-
 use super::Context;
 use super::IntoGraph;
 use super::IntoGraphCtx;

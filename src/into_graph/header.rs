@@ -1,13 +1,9 @@
 use fastobo::ast::HeaderFrame;
 
 use crate::constants::property::obo_in_owl;
-
 use crate::error::Result;
-
 use crate::model::Meta;
-
 use crate::model::BasicPropertyValue;
-
 use super::Context;
 use super::IntoGraphCtx;
 

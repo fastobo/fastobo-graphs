@@ -1,12 +1,9 @@
 use fastobo::ast::EntityFrame;
-
 use fastobo::ast::TermFrame;
-
 use fastobo::ast::InstanceFrame;
 use fastobo::ast::TypedefFrame;
 
 use crate::constants::property::obo_in_owl;
-
 use crate::error::Result;
 use crate::model::BasicPropertyValue;
 use crate::model::DefinitionPropertyValue;
@@ -16,9 +13,7 @@ use crate::model::Graph;
 use crate::model::Meta;
 use crate::model::Node;
 use crate::model::NodeType;
-
 use crate::model::XrefPropertyValue;
-
 use super::Context;
 use super::IntoGraphCtx;
 

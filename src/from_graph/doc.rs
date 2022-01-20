@@ -1,21 +1,14 @@
 use std::str::FromStr;
-
 use std::collections::HashMap;
 
 use fastobo::ast::ClassIdent;
-
 use fastobo::ast::EntityFrame;
 use fastobo::ast::Ident;
-
 use fastobo::ast::OboDoc;
-
 use fastobo::ast::InstanceClause;
 use fastobo::ast::TermClause;
 use fastobo::ast::TypedefClause;
-
 use fastobo::ast::Line;
-
-use fastobo::ast::RelationIdent;
 
 use fastobo::semantics::Identified;
 use fastobo::semantics::Orderable;
@@ -23,7 +16,6 @@ use fastobo::visit::IdCompactor;
 use fastobo::visit::VisitMut;
 
 use crate::model::Graph;
-
 use super::FromGraph;
 use crate::error::Error;
 use crate::error::Result;
