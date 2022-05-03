@@ -50,13 +50,16 @@ pub struct Graph {
     #[serde(rename = "lbl")]
     pub label: Option<String>,
     pub meta: Box<Meta>,
-    #[serde(rename = "equivalentNodesSets")]
+    #[serde(rename = "equivalentNodesSets", deserialize_with = "optional_vector")]
     pub equivalent_nodes_sets: Vec<EquivalentNodesSet>,
-    #[serde(rename = "logicalDefinitionAxioms")]
+    #[serde(
+        rename = "logicalDefinitionAxioms",
+        deserialize_with = "optional_vector"
+    )]
     pub logical_definition_axioms: Vec<LogicalDefinitionAxiom>,
-    #[serde(rename = "domainRangeAxioms")]
+    #[serde(rename = "domainRangeAxioms", deserialize_with = "optional_vector")]
     pub domain_range_axioms: Vec<DomainRangeAxiom>,
-    #[serde(rename = "propertyChainAxioms")]
+    #[serde(rename = "propertyChainAxioms", deserialize_with = "optional_vector")]
     pub property_chain_axioms: Vec<PropertyChainAxiom>,
 }
 
@@ -110,6 +113,7 @@ pub struct Meta {
 pub struct DefinitionPropertyValue {
     pub pred: Option<String>,
     pub val: String,
+    #[serde(default, deserialize_with = "optional_vector")]
     pub xrefs: Vec<String>,
     pub meta: Option<Box<Meta>>,
 }
@@ -144,7 +148,7 @@ pub struct LogicalDefinitionAxiom {
     pub meta: Option<Box<Meta>>,
     #[serde(rename = "definedClassId")]
     pub defined_class_id: String,
-    #[serde(rename = "genusIds")]
+    #[serde(rename = "genusIds", deserialize_with = "optional_vector")]
     pub genus_ids: Vec<String>,
     #[serde(deserialize_with = "nullable_vector")]
     pub restrictions: Vec<ExistentialRestrictionExpression>,
