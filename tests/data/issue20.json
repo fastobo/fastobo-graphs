@@ -1,0 +1,13 @@
+{
+  "graphs": [
+    {
+      "id": "test",
+      "nodes": [
+        {
+          "id": "GO:0005773",
+          "lbl": "vacuole"
+        }
+      ]
+    }
+  ]
+}

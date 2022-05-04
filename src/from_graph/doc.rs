@@ -157,7 +157,6 @@ impl FromGraph<Graph> for OboDoc {
             HeaderFrame::new()
         };
 
-
         // collect entities and merge them into a document
         let mut doc = OboDoc::with_header(header)
             .and_entities(entities.into_iter().map(|(_, v)| v).collect());

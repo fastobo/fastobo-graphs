@@ -51,7 +51,11 @@ pub struct Graph {
     #[serde(rename = "lbl")]
     pub label: Option<String>,
     pub meta: Option<Box<Meta>>,
-    #[serde(default, rename = "equivalentNodesSets", deserialize_with = "optional_vector")]
+    #[serde(
+        default,
+        rename = "equivalentNodesSets",
+        deserialize_with = "optional_vector"
+    )]
     pub equivalent_nodes_sets: Vec<EquivalentNodesSet>,
     #[serde(
         default,
@@ -59,9 +63,17 @@ pub struct Graph {
         deserialize_with = "optional_vector"
     )]
     pub logical_definition_axioms: Vec<LogicalDefinitionAxiom>,
-    #[serde(default, rename = "domainRangeAxioms", deserialize_with = "optional_vector")]
+    #[serde(
+        default,
+        rename = "domainRangeAxioms",
+        deserialize_with = "optional_vector"
+    )]
     pub domain_range_axioms: Vec<DomainRangeAxiom>,
-    #[serde(default, rename = "propertyChainAxioms", deserialize_with = "optional_vector")]
+    #[serde(
+        default,
+        rename = "propertyChainAxioms",
+        deserialize_with = "optional_vector"
+    )]
     pub property_chain_axioms: Vec<PropertyChainAxiom>,
 }
 
