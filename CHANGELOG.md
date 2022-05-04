@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [Unreleased]
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.6...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.7...HEAD
+
+## [v0.4.7] - 2022-05-04
+[v0.4.7]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.6...v0.4.7
+### Changed
+- Make `meta` attribute of `Graph` optional and fix `serde` still requiring some optional fields.
 
 ## [v0.4.6] - 2022-05-04
 [v0.4.6]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.5...v0.4.6
