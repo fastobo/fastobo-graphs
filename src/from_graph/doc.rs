@@ -133,24 +133,30 @@ impl FromGraph<Graph> for OboDoc {
         }
 
         // extract header
-        let version_iri = graph.meta.version.clone();
-        let mut header = HeaderFrame::from_graph(*graph.meta)?;
-        if let Some(ont) = graph.id.strip_prefix(crate::constants::uri::OBO) {
-            let id = ont.trim_end_matches(".obo").trim_end_matches(".owl");
-            header.push(HeaderClause::Ontology(Box::new(id.into())));
-            if let Some(ref v) = version_iri
-                .as_ref()
-                .and_then(|url| url.strip_prefix(crate::constants::uri::OBO))
-            {
-                let version = v
-                    .trim_start_matches(id)
-                    .trim_end_matches(".owl")
-                    .trim_end_matches(".obo")
-                    .trim_end_matches(id)
-                    .trim_matches('/');
-                header.push(HeaderClause::DataVersion(Box::new(version.into())))
+        let header = if let Some(meta) = &graph.meta {
+            let version_iri = meta.version.clone();
+            let mut header = HeaderFrame::from_graph((**meta).clone())?;
+            if let Some(ont) = graph.id.strip_prefix(crate::constants::uri::OBO) {
+                let id = ont.trim_end_matches(".obo").trim_end_matches(".owl");
+                header.push(HeaderClause::Ontology(Box::new(id.into())));
+                if let Some(ref v) = version_iri
+                    .as_ref()
+                    .and_then(|url| url.strip_prefix(crate::constants::uri::OBO))
+                {
+                    let version = v
+                        .trim_start_matches(id)
+                        .trim_end_matches(".owl")
+                        .trim_end_matches(".obo")
+                        .trim_end_matches(id)
+                        .trim_matches('/');
+                    header.push(HeaderClause::DataVersion(Box::new(version.into())))
+                }
             }
-        }
+            header
+        } else {
+            HeaderFrame::new()
+        };
+
 
         // collect entities and merge them into a document
         let mut doc = OboDoc::with_header(header)

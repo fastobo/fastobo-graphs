@@ -26,7 +26,7 @@ impl IntoGraphCtx<GraphDocument> for OboDoc {
             edges: Vec::new(),
             id: ctx.ontology_iri.to_string(),
             label: None,
-            meta: header.into_graph_ctx(ctx).map(Box::new)?,
+            meta: header.into_graph_ctx(ctx).map(Box::new).map(Some)?,
             equivalent_nodes_sets: Vec::new(),
             logical_definition_axioms: Vec::new(),
             domain_range_axioms: Vec::new(),

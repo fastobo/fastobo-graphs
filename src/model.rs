@@ -16,6 +16,7 @@ use crate::utils::serde::optional_vector;
 pub struct GraphDocument {
     #[serde(default, deserialize_with = "optional_vector")]
     pub graphs: Vec<Graph>,
+    #[serde(default)]
     pub meta: Option<Box<Meta>>,
 }
 
@@ -49,17 +50,18 @@ pub struct Graph {
     pub id: String,
     #[serde(rename = "lbl")]
     pub label: Option<String>,
-    pub meta: Box<Meta>,
-    #[serde(rename = "equivalentNodesSets", deserialize_with = "optional_vector")]
+    pub meta: Option<Box<Meta>>,
+    #[serde(default, rename = "equivalentNodesSets", deserialize_with = "optional_vector")]
     pub equivalent_nodes_sets: Vec<EquivalentNodesSet>,
     #[serde(
+        default,
         rename = "logicalDefinitionAxioms",
         deserialize_with = "optional_vector"
     )]
     pub logical_definition_axioms: Vec<LogicalDefinitionAxiom>,
-    #[serde(rename = "domainRangeAxioms", deserialize_with = "optional_vector")]
+    #[serde(default, rename = "domainRangeAxioms", deserialize_with = "optional_vector")]
     pub domain_range_axioms: Vec<DomainRangeAxiom>,
-    #[serde(rename = "propertyChainAxioms", deserialize_with = "optional_vector")]
+    #[serde(default, rename = "propertyChainAxioms", deserialize_with = "optional_vector")]
     pub property_chain_axioms: Vec<PropertyChainAxiom>,
 }
 
