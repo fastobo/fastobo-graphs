@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [Unreleased]
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.5...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.6...HEAD
+
+## [v0.4.6] - 2022-05-04
+[v0.4.6]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.5...v0.4.6
+### Fixed
+- Optional fields being required when parsing serialized OBO Graphs ([#20](https://github.com/fastobo/fastobo-graphs/issues/20)).
 
 ## [v0.4.5] - 2022-01-20
 [v0.4.5]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.4...v0.4.5
