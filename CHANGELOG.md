@@ -6,7 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [Unreleased]
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.7...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.8...HEAD
+
+## [v0.4.8] - 2022-12-05
+[v0.4.8]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.7...v0.4.8
+### Changed
+- Bumped `fastobo` to `v0.15.1`.
+- Bumped `serde_yaml` to `v0.9`.
+- Bumped `obofoundry` test requirement to `v0.10.0`.
+- Allow missing `restrictions` key in `LogicalDefinitionAxiom`.
 
 ## [v0.4.7] - 2022-05-04
 [v0.4.7]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.6...v0.4.7
