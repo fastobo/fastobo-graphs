@@ -70,7 +70,10 @@ foundrytest!(
     #[ignore]
     go_plus(go, "go/extensions/go-plus.json")
 );
-foundrytest!(pato(pato, "pato.json"));
+foundrytest!(
+    #[ignore]
+    pato(pato, "pato.json")
+);
 foundrytest!(
     #[ignore]
     mondo(mondo, "mondo.json")
