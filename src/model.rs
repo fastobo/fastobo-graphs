@@ -164,7 +164,7 @@ pub struct LogicalDefinitionAxiom {
     pub defined_class_id: String,
     #[serde(rename = "genusIds", deserialize_with = "optional_vector")]
     pub genus_ids: Vec<String>,
-    #[serde(deserialize_with = "nullable_vector")]
+    #[serde(default, deserialize_with = "nullable_vector")]
     pub restrictions: Vec<ExistentialRestrictionExpression>,
 }
 
