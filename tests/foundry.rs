@@ -10,10 +10,10 @@ use fastobo_graphs::model::GraphDocument;
 lazy_static::lazy_static! {
     /// The latest OBO Foundry listing.
     static ref FOUNDRY: obofoundry::Foundry = {
-        let response = ureq::get("http://www.obofoundry.org/registry/ontologies.yml")
+        let mut response = ureq::get("http://www.obofoundry.org/registry/ontologies.yml")
             .call()
             .unwrap();
-        serde_yaml::from_reader(response.into_reader())
+        serde_yaml::from_reader(response.body_mut().as_reader())
             .expect("could not read the OBO Foundry listing")
     };
 }
@@ -36,15 +36,12 @@ macro_rules! foundrytest {
                 .ontology_purl;
 
             // get the OBO document
-            let res = ureq::builder()
-                .redirects(10)
-                .build()
-                .get(url.as_str())
+            let mut res = ureq::get(url.as_str())
                 .call()
                 .unwrap();
 
             // parse the OBO file if it is a correct OBO file.
-            let mut buf = BufReader::new(res.into_reader());
+            let mut buf = BufReader::new(res.body_mut().as_reader());
             let peek = buf.fill_buf().expect("could not read response");
 
             if peek.starts_with(b"{") {
