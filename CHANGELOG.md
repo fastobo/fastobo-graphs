@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [Unreleased]
-[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.8...HEAD
+[Unreleased]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.9...HEAD
+
+## [v0.4.9] - 2025-02-13
+[v0.4.9]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.8...v0.4.9
+### Changed
+- Bumped `fastobo` to `v0.15.3`.
+- Bumped `lazy-static` to `v1.5`.
 
 ## [v0.4.8] - 2022-12-05
 [v0.4.8]: https://github.com/fastobo/fastobo-graphs/compare/v0.4.7...v0.4.8
